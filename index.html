@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>La Perla Admin - Premium & Excel</title>
+<title>La Perla Admin - Pro Max</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,12 +17,23 @@
     header { 
         background: rgba(17, 24, 39, 0.85); 
         backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        padding: 20px 15px; text-align: center; font-size: 22px; font-weight: 700; 
+        padding: 15px; text-align: center; font-size: 22px; font-weight: 700; 
         border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
         position: sticky; top: 0; z-index: 100; 
-        display: flex; justify-content: center; align-items: center;
+        display: flex; flex-direction: column; align-items: center;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
+    
+    .header-top { display: flex; justify-content: center; width: 100%; position: relative; align-items: center; margin-bottom: 10px; }
+
+    /* Estilos para las solapas (Tabs) */
+    .tabs-container { display: flex; width: 100%; background: #1e293b; border-radius: 10px; overflow: hidden; }
+    .tab-btn { 
+        flex: 1; padding: 10px 5px; font-size: 14px; background: transparent; color: #94a3b8; 
+        border: none; margin: 0; border-radius: 0; box-shadow: none; font-weight: 600;
+        transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn.active { background: #38bdf8; color: #0f172a; }
 
     .container { display: flex; flex-direction: column; padding: 15px; gap: 15px; }
     .card { background: #1e293b; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); }
@@ -45,40 +56,49 @@
     .player { background: #0b1220; padding: 18px; border-radius: 14px; margin-top: 15px; border: 1px solid #1e293b; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
     .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; margin: 5px 0; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    .debt { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: none; }
+    .debt { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.5); }
     .paidGreen { background: #22c55e; color: #000; }
-    .packGray { background: #334155; color: white; border: 1px solid #475569; box-shadow: none; }
+    .packGray { background: #334155; color: white; border: 1px solid #475569; }
     .packGreen { background: #10b981; color: #000; border: 1px solid #10b981;}
-    .deleteBtn { background: transparent; color: #ef4444; border: 1px solid #ef4444; margin-top: 15px; font-size: 13px; box-shadow: none;}
+    .deleteBtn { background: transparent; color: #ef4444; border: 1px solid #ef4444; margin-top: 15px; font-size: 13px;}
     .viewBtn { background: #3b82f6; color: white; }
     .backBtn { background: #475569; color: white; margin-bottom: 20px; }
-    .wsBtn { background: #25d366; color: white; text-decoration: none; display: block; text-align: center; padding: 14px; border-radius: 10px; margin-top: 5px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.15s ease; }
-    .wsBtn:active { transform: scale(0.96); }
+    .wsBtn { background: #25d366; color: white; text-decoration: none; display: block; text-align: center; padding: 14px; border-radius: 10px; margin-top: 5px; font-weight: 600;}
     
     .stateGreen { background: #22c55e; color: #000; }
     .stateYellow { background: #facc15; color: #000; }
     .stateRed { background: #ef4444; color: #fff; }
     
-    #searchInput { background: #0f172a; margin-bottom: 15px; }
-    
     .history-item { background: #1e293b; padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #38bdf8; }
     .expense-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ef4444; }
+    .income-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #22c55e; }
     .rev-detail { font-size: 14px; color: #94a3b8; margin-top: 15px; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1e293b; }
     
-    .del-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 30px; height: 30px; border-radius: 50%; padding: 0; line-height: 1; font-size: 16px; border: none; margin: 0; display: flex; align-items: center; justify-content: center; box-shadow: none; }
-    .btn-config { position: absolute; right: 15px; background: transparent; border: 1px solid rgba(56, 189, 248, 0.5); color: #38bdf8; padding: 6px 12px; width: auto; border-radius: 8px; font-size: 14px; box-shadow: none; }
+    .del-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 30px; height: 30px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor:pointer;}
+    .btn-config { position: absolute; right: 0; background: transparent; border: 1px solid rgba(56, 189, 248, 0.5); color: #38bdf8; padding: 6px 12px; width: auto; border-radius: 8px; font-size: 14px; box-shadow:none;}
     
     #loginView { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
-    .login-box { background: #1e293b; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .login-box { background: #1e293b; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; border: 1px solid rgba(56, 189, 248, 0.3); }
     
     .excelBtn { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; margin-top: 15px; }
+    
+    /* Contenedores de las solapas */
+    .tab-content { display: none; flex-direction: column; gap: 15px; }
+    .tab-content.active { display: flex; }
 </style>
 </head>
 <body>
 
-<header>
-    🏓 La Perla
-    <button class="btn-config" id="configBtn" style="display:none;" onclick="showView('settings')">⚙️ Precios</button>
+<header id="mainHeader" style="display:none;">
+    <div class="header-top">
+        🏓 La Perla
+        <button class="btn-config" onclick="showView('settings')">⚙️ Precios</button>
+    </div>
+    <div class="tabs-container">
+        <button id="btnTabResumen" class="tab-btn active" onclick="switchTab('resumen')">📊 Resumen</button>
+        <button id="btnTabJugadores" class="tab-btn" onclick="switchTab('jugadores')">👥 Jugadores</button>
+        <button id="btnTabViernes" class="tab-btn" onclick="switchTab('viernes')">🗓️ Viernes</button>
+    </div>
 </header>
 
 <div class="container">
@@ -92,24 +112,37 @@
     </div>
 
     <div id="mainContent" style="display:none;">
-        <div class="card">
-            <h3>📅 Mes y Balance</h3>
-            <select id="monthSelect" onchange="setMonth(this.value)"></select>
-            <div id="revenueTotal" class="rev-detail"></div>
-            <button onclick="exportToCSV()" class="excelBtn">📊 Descargar Resumen (Excel)</button>
-        </div>
-
-        <div id="listView">
+        
+        <div id="tabResumen" class="tab-content active">
             <div class="card">
-                <h3>💸 Gastos del Mes</h3>
+                <h3>📅 Mes y Balance</h3>
+                <select id="monthSelect" onchange="setMonth(this.value)"></select>
+                <div id="revenueTotal" class="rev-detail"></div>
+                <button onclick="exportToCSV()" class="excelBtn">📊 Descargar Excel</button>
+            </div>
+            
+            <div class="card">
+                <h3>💵 Otros Ingresos</h3>
                 <div style="display:flex; gap:5px;">
-                    <input id="expDesc" placeholder="Ej: Pelotas, Profe..." style="flex:2; margin:0;"/>
+                    <input id="incDesc" placeholder="Ej: Clase..." style="flex:2; margin:0;"/>
+                    <input id="incAmount" type="number" placeholder="$ Monto" style="flex:1.2; margin:0;"/>
+                    <button class="paidGreen" onclick="addOtherIncome()" style="flex:1; margin:0;">Cargar</button>
+                </div>
+                <div id="incomeList" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>💸 Gastos</h3>
+                <div style="display:flex; gap:5px;">
+                    <input id="expDesc" placeholder="Ej: Alquiler..." style="flex:2; margin:0;"/>
                     <input id="expAmount" type="number" placeholder="$ Monto" style="flex:1.2; margin:0;"/>
-                    <button class="paidGreen" onclick="addExpense()" style="flex:1; margin:0;">Cargar</button>
+                    <button class="stateRed" onclick="addExpense()" style="flex:1; margin:0; background:#ef4444;">Cargar</button>
                 </div>
                 <div id="expensesList" style="margin-top:10px;"></div>
             </div>
+        </div>
 
+        <div id="tabJugadores" class="tab-content">
             <div class="card">
                 <h3>➕ Agregar Jugador</h3>
                 <div style="display:flex; gap:5px;">
@@ -119,34 +152,36 @@
             </div>
 
             <div class="card">
-                <h3>👥 Jugadores</h3>
-                <input type="text" id="searchInput" placeholder="🔍 Buscar jugador..." onkeyup="render()">
+                <h3>👥 Lista de Jugadores</h3>
+                <input type="text" id="searchInput" placeholder="🔍 Buscar jugador..." onkeyup="renderPlayers()">
                 <div id="players"></div>
             </div>
-            
+        </div>
+
+        <div id="tabViernes" class="tab-content">
             <div class="card">
                 <h3>🗓️ Asistencia Viernes</h3>
+                <p style="font-size:13px; color:#94a3b8; margin-top:0;">Elegí un viernes para ver la lista.</p>
                 <div id="fridays"></div>
             </div>
         </div>
 
-        <div class="card" id="profileView" style="display:none;"></div>
-        <div class="card" id="fridayView" style="display:none;"></div>
-        
-        <div class="card" id="settingsView" style="display:none;">
-            <button class='backBtn' onclick="showView('list')">⬅ Volver al inicio</button>
-            <h3 style="color:#38bdf8;">⚙️ Configurar Precios</h3>
-            <p style="font-size:14px; color:#94a3b8;">Los valores que cambies acá afectarán las deudas de todos.</p>
-            <label style="font-size: 14px; font-weight: 600;">Cuota 1 vez/sem ($):</label>
-            <input id="p_plan1" type="number"/>
-            <label style="font-size: 14px; font-weight: 600;">Cuota 2 veces/sem ($):</label>
-            <input id="p_plan2" type="number"/>
-            <label style="font-size: 14px; font-weight: 600;">Viernes Suelto ($):</label>
-            <input id="p_friday" type="number"/>
-            <label style="font-size: 14px; font-weight: 600;">Pack Viernes ($):</label>
-            <input id="p_pack" type="number"/>
-            <button class="paidGreen" onclick="savePrices()" style="margin-top:15px;">Guardar Precios</button>
-        </div>
+    </div>
+
+    <div class="card" id="profileView" style="display:none;"></div>
+    <div class="card" id="fridayView" style="display:none;"></div>
+    <div class="card" id="settingsView" style="display:none;">
+        <button class='backBtn' onclick="showView('list')">⬅ Volver</button>
+        <h3 style="color:#38bdf8;">⚙️ Configurar Precios</h3>
+        <label style="font-size: 14px;">Cuota 1 vez/sem ($):</label>
+        <input id="p_plan1" type="number"/>
+        <label style="font-size: 14px;">Cuota 2 veces/sem ($):</label>
+        <input id="p_plan2" type="number"/>
+        <label style="font-size: 14px;">Viernes Suelto ($):</label>
+        <input id="p_friday" type="number"/>
+        <label style="font-size: 14px;">Pack Viernes ($):</label>
+        <input id="p_pack" type="number"/>
+        <button class="paidGreen" onclick="savePrices()" style="margin-top:15px;">Guardar</button>
     </div>
 </div>
 
@@ -166,9 +201,10 @@ const db = firebase.database();
 
 const MASTER_PASS = "19122001";
 let isLoggedIn = false;
+let currentTabState = 'resumen'; 
 
 let data = { 
-    players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{}, expenses:{},
+    players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{}, expenses:{}, otherIncome:{},
     prices: { plan1: 30000, plan2: 45000, friday: 8000, packFriday: 20000 }
 };
 
@@ -184,7 +220,7 @@ function checkLogin() {
         isLoggedIn = true;
         document.getElementById('loginView').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
-        document.getElementById('configBtn').style.display = 'block';
+        document.getElementById('mainHeader').style.display = 'flex';
         render();
     } else {
         document.getElementById('loginError').style.display = 'block';
@@ -201,12 +237,32 @@ db.ref('perlaData').on('value', (snapshot) => {
         if(!data.players) data.players = [];
         if(!data.prices) data.prices = { plan1: 30000, plan2: 45000, friday: 8000, packFriday: 20000 };
         if(!data.expenses) data.expenses = {};
+        if(!data.otherIncome) data.otherIncome = {};
     }
     if(isLoggedIn) render();
 });
 
 function save(){ db.ref('perlaData').set(data); }
 function setMonth(m){ selectedMonth = m; render(); }
+
+// LOGICA DE SOLAPAS (TABS)
+function switchTab(tabName) {
+    currentTabState = tabName;
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    
+    if(tabName === 'resumen') {
+        document.getElementById('tabResumen').classList.add('active');
+        document.getElementById('btnTabResumen').classList.add('active');
+    } else if (tabName === 'jugadores') {
+        document.getElementById('tabJugadores').classList.add('active');
+        document.getElementById('btnTabJugadores').classList.add('active');
+    } else if (tabName === 'viernes') {
+        document.getElementById('tabViernes').classList.add('active');
+        document.getElementById('btnTabViernes').classList.add('active');
+    }
+    render();
+}
 
 function updateMonthSelector(){
     let sel=document.getElementById('monthSelect');
@@ -216,8 +272,7 @@ function updateMonthSelector(){
     sel.innerHTML='';
     options.forEach(m=>{
         let opt=document.createElement('option'); opt.value=m; opt.textContent=m;
-        if(m===selectedMonth) opt.selected=true; 
-        sel.appendChild(opt);
+        if(m===selectedMonth) opt.selected=true; sel.appendChild(opt);
     });
 }
 
@@ -233,7 +288,23 @@ function savePrices() {
     data.prices.plan2 = parseInt(document.getElementById('p_plan2').value) || 0;
     data.prices.friday = parseInt(document.getElementById('p_friday').value) || 0;
     data.prices.packFriday = parseInt(document.getElementById('p_pack').value) || 0;
-    save(); alert("¡Precios actualizados con éxito!"); showView('list');
+    save(); alert("Precios guardados"); showView('list');
+}
+
+function addOtherIncome() {
+    let desc = document.getElementById('incDesc').value.trim();
+    let amt = parseInt(document.getElementById('incAmount').value);
+    if(!desc || !amt) return;
+    if(!data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth] = [];
+    data.otherIncome[selectedMonth].push({ id: Date.now(), desc: desc, amount: amt });
+    document.getElementById('incDesc').value = ''; document.getElementById('incAmount').value = '';
+    save();
+}
+
+function removeOtherIncome(id) {
+    if(!confirm("¿Borrar este ingreso?")) return;
+    data.otherIncome[selectedMonth] = data.otherIncome[selectedMonth].filter(e => e.id !== id);
+    save();
 }
 
 function addExpense() {
@@ -247,7 +318,7 @@ function addExpense() {
 }
 
 function removeExpense(id) {
-    if(!confirm("¿Eliminar este gasto?")) return;
+    if(!confirm("¿Borrar este gasto?")) return;
     data.expenses[selectedMonth] = data.expenses[selectedMonth].filter(e => e.id !== id);
     save();
 }
@@ -266,7 +337,7 @@ function removePlayer(p){
 function payMonth(p){
     let amount=parseInt(document.getElementById('pay_'+p).value||0);
     if(!amount) return;
-    if(!confirm(`¿Confirmar pago de $${amount} para ${p}?`)) return;
+    if(!confirm(`¿Cobrar $${amount} a ${p}?`)) return;
     if(!data.monthPayments) data.monthPayments = {};
     if(!data.monthPayments[selectedMonth]) data.monthPayments[selectedMonth]={};
     data.monthPayments[selectedMonth][p] = (data.monthPayments[selectedMonth][p] || 0) + amount;
@@ -277,7 +348,7 @@ function payMonth(p){
 }
 
 function deletePayment(player, paymentId) {
-    if(!confirm("¿Borrar este registro de pago?")) return;
+    if(!confirm("¿Borrar pago?")) return;
     let pIdx = data.history[player].findIndex(h => h.id === paymentId);
     if(pIdx > -1) {
         let payment = data.history[player][pIdx];
@@ -290,7 +361,11 @@ function deletePayment(player, paymentId) {
 
 function calcDebt(p){
     let mp = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
-    let planPrice = (data.plans && data.plans[p] == 2) ? data.prices.plan2 : data.prices.plan1;
+    let planPrice = 0;
+    if(data.plans && data.plans[p] == 1) planPrice = data.prices.plan1;
+    else if(data.plans && data.plans[p] == 2) planPrice = data.prices.plan2;
+    else if(data.plans && data.plans[p] == 3) planPrice = 0; 
+
     let fridayDebt = 0;
     if(!data.fridayPack || !data.fridayPack[p]){
         Object.keys(data.fridayAttendance || {}).forEach(k=>{
@@ -311,7 +386,10 @@ function getState(p){
 
 function showView(view) {
     currentView = view;
-    document.getElementById('listView').style.display = (view === 'list') ? 'block' : 'none';
+    // Ocultar tabs si no estamos en lista principal
+    document.querySelector('.tabs-container').style.display = (view === 'list') ? 'flex' : 'none';
+    
+    document.getElementById('mainContent').style.display = (view === 'list') ? 'block' : 'none';
     document.getElementById('profileView').style.display = (view === 'profile') ? 'block' : 'none';
     document.getElementById('fridayView').style.display = (view === 'friday') ? 'block' : 'none';
     document.getElementById('settingsView').style.display = (view === 'settings') ? 'block' : 'none';
@@ -321,14 +399,20 @@ function showView(view) {
 
 function render(){
     if(!isLoggedIn) return; 
-    updateMonthSelector(); updateRevenueUI();
-    if(currentView === 'list') renderList();
+    updateMonthSelector(); 
+    
+    if(currentView === 'list') {
+        if(currentTabState === 'resumen') updateRevenueUI();
+        if(currentTabState === 'jugadores') renderPlayers();
+        if(currentTabState === 'viernes') renderFridaysMenu();
+    }
     else if(currentView === 'profile') renderProfile();
     else if(currentView === 'friday') renderFridayView();
 }
 
 function updateRevenueUI() {
-    let cuotas = 0; let sueltos = 0; let packs = 0; let gastos = 0;
+    let cuotas = 0; let sueltos = 0; let packs = 0; let gastos = 0; let otrosIng = 0;
+    
     if(data.monthPayments && data.monthPayments[selectedMonth]){
         Object.values(data.monthPayments[selectedMonth]).forEach(v=>cuotas+=v);
     }
@@ -337,32 +421,45 @@ function updateRevenueUI() {
             Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=data.prices.friday; });
         }
     });
+    // Se asume que si tienen el pack activo, ingresó esa plata este mes
     data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs+=data.prices.packFriday; });
     
-    let totalIngresos = cuotas + sueltos + packs;
     if(data.expenses && data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => gastos += e.amount);
+    if(data.otherIncome && data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => otrosIng += e.amount);
+    
+    let totalIngresos = cuotas + sueltos + packs + otrosIng;
     let neto = totalIngresos - gastos;
     
     document.getElementById('revenueTotal').innerHTML = `
-        <div style="display:flex; justify-content:space-between; color:#22c55e;"><span>📈 Ingresos:</span> <b>$${totalIngresos.toLocaleString()}</b></div>
-        <div style="display:flex; justify-content:space-between; color:#ef4444; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:8px;"><span>📉 Gastos:</span> <b>-$${gastos.toLocaleString()}</b></div>
+        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>📅 Mes (Cuotas):</span> <b>$${cuotas.toLocaleString()}</b></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>🍻 Viernes Sueltos:</span> <b>$${sueltos.toLocaleString()}</b></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>🎟️ Packs Viernes:</span> <b>$${packs.toLocaleString()}</b></div>
+            <div style="display:flex; justify-content:space-between;"><span>💵 Otros Ingresos:</span> <b>$${otrosIng.toLocaleString()}</b></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; color:#22c55e;"><span>📈 Ingresos Totales:</span> <b>$${totalIngresos.toLocaleString()}</b></div>
+        <div style="display:flex; justify-content:space-between; color:#ef4444; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:8px;"><span>📉 Gastos Totales:</span> <b>-$${gastos.toLocaleString()}</b></div>
         <div style="display:flex; justify-content:space-between; color:#38bdf8; font-size:1.3em;"><span>💰 CAJA NETA:</span> <b>$${neto.toLocaleString()}</b></div>
     `;
 
+    // Render listas de gastos e ingresos
+    let ilist = document.getElementById('incomeList');
+    ilist.innerHTML = '';
+    if(data.otherIncome && data.otherIncome[selectedMonth]) {
+        data.otherIncome[selectedMonth].forEach(e => {
+            ilist.innerHTML += `<div class="income-item"><span>${e.desc}</span><div><b style="color:#22c55e; margin-right:10px;">+$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeOtherIncome(${e.id})">×</button></div></div>`;
+        });
+    }
     let elist = document.getElementById('expensesList');
-    if(elist) {
-        elist.innerHTML = '';
-        if(data.expenses && data.expenses[selectedMonth] && data.expenses[selectedMonth].length > 0) {
-            data.expenses[selectedMonth].forEach(e => {
-                elist.innerHTML += `<div class="expense-item"><span>${e.desc}</span><div><b style="color:#ef4444; margin-right:10px;">-$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeExpense(${e.id})">×</button></div></div>`;
-            });
-        } else {
-            elist.innerHTML = `<p style="font-size:13px; color:#94a3b8; text-align:center;">Sin gastos registrados en ${selectedMonth}.</p>`;
-        }
+    elist.innerHTML = '';
+    if(data.expenses && data.expenses[selectedMonth]) {
+        data.expenses[selectedMonth].forEach(e => {
+            elist.innerHTML += `<div class="expense-item"><span>${e.desc}</span><div><b style="color:#ef4444; margin-right:10px;">-$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeExpense(${e.id})">×</button></div></div>`;
+        });
     }
 }
 
-function renderList(){
+function renderPlayers(){
     let pd = document.getElementById('players'); pd.innerHTML = '';
     const search = document.getElementById('searchInput').value.toLowerCase();
     let sortedPlayers = [...data.players].sort();
@@ -378,8 +475,9 @@ function renderList(){
             <span class='badge debt'>Deuda: $${debt.toLocaleString()}</span>
             <div style="display:flex; gap:10px; margin-top:5px;">
                 <select style="flex:1" onchange="if(!data.plans) data.plans={}; data.plans['${p}']=parseInt(this.value); save();">
-                    <option value="1" ${(!data.plans || data.plans[p]!=2)?'selected':''}>1 vez/sem</option>
+                    <option value="1" ${(!data.plans || data.plans[p]==1)?'selected':''}>1 vez/sem</option>
                     <option value="2" ${(data.plans && data.plans[p]==2)?'selected':''}>2 veces/sem</option>
+                    <option value="3" ${(data.plans && data.plans[p]==3)?'selected':''}>Solo Viernes</option>
                 </select>
                 <button class="${packActivo?'packGreen':'packGray'}" style="flex:1; font-size:13px;" onclick="if(!data.fridayPack) data.fridayPack={}; data.fridayPack['${p}']=!data.fridayPack['${p}']; save();">
                     ${packActivo?'Pack Viernes ✔':'Pack Viernes ✖'}
@@ -396,7 +494,9 @@ function renderList(){
             <button class='deleteBtn' style="padding:10px;" onclick="removePlayer('${p}')">Eliminar Jugador</button>`;
         pd.appendChild(el);
     });
-    
+}
+
+function renderFridaysMenu() {
     let fr = document.getElementById('fridays'); fr.innerHTML = '';
     let monthsArr = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
     let parts = selectedMonth.split(" de ");
@@ -419,11 +519,9 @@ function renderProfile(){
     let history = data.history && data.history[p] ? data.history[p] : [];
     let html = `<button class='backBtn' onclick="showView('list')">⬅ Volver</button><h2 style="margin-top:0;">Historial de ${p}</h2>`;
     if(history.length === 0) html += '<p style="color:#94a3b8;">Sin pagos registrados.</p>';
-    else {
-        history.slice().reverse().forEach(h => {
-            html += `<div class="history-item"><span>${h.date} (${h.month})</span><div><b style="margin-right:10px;">$${h.amount.toLocaleString()}</b><button class="del-icon" onclick="deletePayment('${p}', ${h.id})">×</button></div></div>`;
-        });
-    }
+    history.slice().reverse().forEach(h => {
+        html += `<div class="history-item"><span>${h.date} (${h.month})</span><div><b style="margin-right:10px;">$${h.amount.toLocaleString()}</b><button class="del-icon" onclick="deletePayment('${p}', ${h.id})">×</button></div></div>`;
+    });
     document.getElementById('profileView').innerHTML = html;
 }
 
@@ -433,14 +531,7 @@ function renderFridayView(){
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.forEach(p => {
         let a = (data.fridayAttendance && data.fridayAttendance[k]) ? data.fridayAttendance[k][p] || {present:false, paid:false} : {present:false, paid:false};
-        html += `
-            <div class="player" style="margin-top:10px;">
-                <b style="font-size:1.1em;">${p}</b><br>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})"> ${a.present?'✔ Presente':'✖ Ausente'} </button>
-                    <button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}> ${a.paid?'💰 Pagó':'⏳ No pagó'} </button>
-                </div>
-            </div>`;
+        html += `<div class="player"><b>${p}</b><div style="display:flex; gap:10px; margin-top:10px;"><button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})"> ${a.present?'✔ Presente':'✖ Ausente'} </button><button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}> ${a.paid?'💰 Pagó':'⏳ No pagó'} </button></div></div>`;
     });
     document.getElementById('fridayView').innerHTML = html;
 }
@@ -451,54 +542,29 @@ function toggleFriday(p,d){
     if(!data.fridayAttendance[k]) data.fridayAttendance[k]={};
     if(!data.fridayAttendance[k][p]) data.fridayAttendance[k][p]={present:false,paid:false};
     data.fridayAttendance[k][p].present = !data.fridayAttendance[k][p].present;
-    if(!data.fridayAttendance[k][p].present) data.fridayAttendance[k][p].paid = false;
     save();
 }
-
 function toggleFridayPay(p,d){ let k=selectedMonth+'-'+d; data.fridayAttendance[k][p].paid = !data.fridayAttendance[k][p].paid; save(); }
 
-// FUNCIÓN PARA EXPORTAR A EXCEL (CSV)
 function exportToCSV() {
     let csv = "Resumen La Perla - " + selectedMonth + "\n\n";
-    
-    csv += "--- JUGADORES ---\n";
-    csv += "Nombre,Estado,Pagado,Deuda\n";
-    
+    csv += "Nombre,Plan,Pagado,Deuda\n";
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.forEach(p => {
-        let debt = calcDebt(p);
-        let state = getState(p).text;
+        let planStr = data.plans[p] == 1 ? "1 vez" : data.plans[p] == 2 ? "2 veces" : "Solo Viernes";
         let paid = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
-        csv += `"${p}","${state}","$${paid}","$${debt}"\n`;
+        csv += `"${p}","${planStr}","$${paid}","$${calcDebt(p)}"\n`;
     });
+    csv += "\nINGRESOS EXTRA\nDesc,Monto\n";
+    if(data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => csv += `"${e.desc}","+$${e.amount}"\n`);
+    csv += "\nGASTOS\nDesc,Monto\n";
+    if(data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => csv += `"${e.desc}","-$${e.amount}"\n`);
     
-    csv += "\n--- GASTOS ---\n";
-    csv += "Descripcion,Monto\n";
-    let gastosTotal = 0;
-    if(data.expenses && data.expenses[selectedMonth]) {
-        data.expenses[selectedMonth].forEach(e => {
-            csv += `"${e.desc}","-$${e.amount}"\n`;
-            gastosTotal += e.amount;
-        });
-    }
-    if(gastosTotal === 0) {
-        csv += "Sin gastos registrados,$0\n";
-    } else {
-        csv += `"TOTAL GASTOS","-$${gastosTotal}"\n`;
-    }
-    
-    // "\uFEFF" asegura que Excel lea bien los acentos (UTF-8 con BOM)
     let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     let link = document.createElement("a");
-    let url = URL.createObjectURL(blob);
-    
-    // El nombre del archivo se genera automáticamente con el mes seleccionado
-    link.setAttribute("href", url);
-    link.setAttribute("download", `La_Perla_${selectedMonth.replace(' de ','_')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", `La_Perla_${selectedMonth.replace(/ /g,'_')}.csv`);
     link.click();
-    document.body.removeChild(link);
 }
 </script>
 </body>
