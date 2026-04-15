@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>La Perla Admin - Secure</title>
+<title>La Perla Admin - Pro</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
     body{ font-family:Arial, sans-serif; margin:0; background:#0f172a; color:#e2e8f0; line-height: 1.5; }
-    header{ background:#111827; padding:20px 15px; text-align:center; font-size:22px; font-weight:bold; border-bottom: 2px solid #1e293b; position: sticky; top:0; z-index:100; }
+    header{ background:#111827; padding:20px 15px; text-align:center; font-size:22px; font-weight:bold; border-bottom: 2px solid #1e293b; position: sticky; top:0; z-index:100; display:flex; justify-content:center; align-items:center;}
     .container{ display:flex; flex-direction: column; padding:15px; gap:15px; }
     .card{ background:#1e293b; padding:15px; border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
     input, button, select{ padding:12px; border-radius:8px; border:none; margin:5px 0; width:100%; box-sizing:border-box; font-size: 16px; }
     button{ cursor:pointer; font-weight:bold; }
     button:active { opacity: 0.7; }
     
-    /* Estilos del Login */
     #loginView { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
     .login-box { background: #1e293b; padding: 30px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; border: 1px solid #38bdf8; }
     
@@ -25,28 +24,33 @@
     .paidGreen{background:#22c55e; color:black;}
     .packGray{background:#475569; color:white;}
     .packGreen{background:#10b981; color:white;}
-    .deleteBtn{background:#ef4444; color:#fff; margin-top: 10px; font-size: 12px; padding: 5px;}
+    .deleteBtn{background:#ef4444; color:#fff; margin-top: 10px; font-size: 14px;}
     .viewBtn{background:#3b82f6; color:white;}
     .backBtn{background:#64748b; color:white; margin-bottom: 15px;}
     .wsBtn{background:#25d366; color:white; text-decoration:none; display:block; text-align:center; padding:12px; border-radius:8px; margin-top:5px; font-weight:bold;}
     .stateGreen{background:#22c55e; color:black;}
     .stateYellow{background:#f59e0b; color:black;}
     .stateRed{background:#ef4444; color:white;}
+    
     #searchInput { background: #1e293b; color: white; border: 2px solid #334155; margin-bottom: 10px; }
     .history-item { background: #1e293b; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #38bdf8; }
-    .rev-detail { font-size: 13px; color: #94a3b8; margin-top: 5px; background: #0f172a; padding: 8px; border-radius: 6px; }
-    .del-hist { background: #ef4444; color: white; width: 25px; height: 25px; border-radius: 50%; padding: 0; line-height: 1; font-size: 12px; }
+    .expense-item { background: #0f172a; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ef4444; }
+    .rev-detail { font-size: 13px; color: #94a3b8; margin-top: 10px; background: #0f172a; padding: 10px; border-radius: 6px; }
+    .del-icon { background: #ef4444; color: white; width: 25px; height: 25px; border-radius: 50%; padding: 0; line-height: 1; font-size: 12px; border:none; margin:0; }
+    .btn-config { position:absolute; right:15px; background:transparent; border:1px solid #38bdf8; color:#38bdf8; padding:5px 10px; width:auto; border-radius:6px; font-size:14px; }
 </style>
 </head>
 <body>
 
-<header>🏓 La Perla Admin</header>
+<header>
+    🏓 La Perla
+    <button class="btn-config" id="configBtn" style="display:none;" onclick="showView('settings')">⚙️ Precios</button>
+</header>
 
 <div class="container">
     <div id="loginView">
         <div class="login-box">
             <h2 style="color: #38bdf8;">Acceso Restringido</h2>
-            <p>Ingresá la contraseña para continuar:</p>
             <input type="password" id="passInput" placeholder="Contraseña" style="text-align: center;">
             <button onclick="checkLogin()" style="background: #38bdf8; color: black; margin-top: 15px;">Entrar</button>
             <p id="loginError" style="color: #ef4444; display: none; margin-top: 10px; font-size: 14px;">❌ Contraseña incorrecta</p>
@@ -55,24 +59,36 @@
 
     <div id="mainContent" style="display:none;">
         <div class="card">
-            <h3>📅 Mes y Recaudación</h3>
+            <h3>📅 Mes y Balance</h3>
             <select id="monthSelect" onchange="setMonth(this.value)"></select>
-            <div id="revenueTotal" style="font-weight: bold; color: #38bdf8; margin-top: 10px; font-size: 1.4em;"></div>
-            <div id="revenueBreakdown" class="rev-detail"></div>
-        </div>
-
-        <div class="card">
-            <h3>➕ Agregar Jugador</h3>
-            <input id="name" placeholder="Nombre completo" />
-            <button onclick="addPlayer()" style="background:#38bdf8; color: black;">Agregar a la lista</button>
+            <div id="revenueTotal" class="rev-detail"></div>
         </div>
 
         <div id="listView">
+            <div class="card">
+                <h3>💸 Gastos del Mes</h3>
+                <div style="display:flex; gap:5px;">
+                    <input id="expDesc" placeholder="Ej: Pelotas, Profe..." style="flex:2; margin:0;"/>
+                    <input id="expAmount" type="number" placeholder="$ Monto" style="flex:1.2; margin:0;"/>
+                    <button class="deleteBtn" onclick="addExpense()" style="flex:1; margin:0;">Cargar</button>
+                </div>
+                <div id="expensesList" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>➕ Agregar Jugador</h3>
+                <div style="display:flex; gap:5px;">
+                    <input id="name" placeholder="Nombre completo" style="margin:0;" />
+                    <button onclick="addPlayer()" style="background:#38bdf8; color: black; margin:0; width:100px;">Agregar</button>
+                </div>
+            </div>
+
             <div class="card">
                 <h3>👥 Jugadores</h3>
                 <input type="text" id="searchInput" placeholder="🔍 Buscar jugador..." onkeyup="render()">
                 <div id="players"></div>
             </div>
+            
             <div class="card">
                 <h3>🗓️ Asistencia Viernes</h3>
                 <div id="fridays"></div>
@@ -81,11 +97,25 @@
 
         <div class="card" id="profileView" style="display:none;"></div>
         <div class="card" id="fridayView" style="display:none;"></div>
+        
+        <div class="card" id="settingsView" style="display:none;">
+            <button class='backBtn' onclick="showView('list')">⬅ Volver al inicio</button>
+            <h3 style="color:#38bdf8;">⚙️ Configurar Precios</h3>
+            <p style="font-size:14px; color:#94a3b8;">Los valores que cambies acá afectarán las deudas de todos los jugadores.</p>
+            <label>Cuota 1 vez/sem ($):</label>
+            <input id="p_plan1" type="number"/>
+            <label>Cuota 2 veces/sem ($):</label>
+            <input id="p_plan2" type="number"/>
+            <label>Viernes Suelto ($):</label>
+            <input id="p_friday" type="number"/>
+            <label>Pack Viernes ($):</label>
+            <input id="p_pack" type="number"/>
+            <button class="paidGreen" onclick="savePrices()" style="margin-top:15px;">Guardar Precios</button>
+        </div>
     </div>
 </div>
 
 <script>
-// CONFIGURACION FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD1v_l8XF2UVwcXcfNcquhekDv26GNAV8",
   authDomain: "la-perla-admin.firebaseapp.com",
@@ -99,25 +129,28 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const MASTER_PASS = "19122001"; // <--- TU CONTRASEÑA
+const MASTER_PASS = "19122001";
 let isLoggedIn = false;
 
-let data = { players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{} };
-const PRICE_1=30000; const PRICE_2=45000; const FRIDAY_PRICE=8000; const PACK_FRIDAY=20000;
+// NUEVA ESTRUCTURA (incluye expenses y prices)
+let data = { 
+    players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{}, expenses:{},
+    prices: { plan1: 30000, plan2: 45000, friday: 8000, packFriday: 20000 }
+};
 
 let now = new Date();
 function getMonthName(date){ return date.toLocaleString('es-AR',{month:'long',year:'numeric'}); }
 let selectedMonth = getMonthName(now); 
 let currentView = 'list';
 let selectedPlayer = null;
+let selectedFriday = null;
 
-// FUNCIÓN DE LOGIN
 function checkLogin() {
-    const input = document.getElementById('passInput').value;
-    if(input === MASTER_PASS) {
+    if(document.getElementById('passInput').value === MASTER_PASS) {
         isLoggedIn = true;
         document.getElementById('loginView').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('configBtn').style.display = 'block';
         render();
     } else {
         document.getElementById('loginError').style.display = 'block';
@@ -125,19 +158,16 @@ function checkLogin() {
     }
 }
 
-// Permitir entrar con la tecla "Enter"
-document.getElementById('passInput').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') { checkLogin(); }
-});
+document.getElementById('passInput').addEventListener('keypress', e => { if(e.key === 'Enter') checkLogin(); });
 
-// ESCUCHAR FIREBASE
 db.ref('perlaData').on('value', (snapshot) => {
     const cloudData = snapshot.val();
     if(cloudData) { 
         data = { ...data, ...cloudData }; 
-        if(!data.players) data.players = []; 
+        if(!data.players) data.players = [];
+        if(!data.prices) data.prices = { plan1: 30000, plan2: 45000, friday: 8000, packFriday: 20000 };
+        if(!data.expenses) data.expenses = {};
     }
-    // Si ya está logueado, renderizar cambios en tiempo real
     if(isLoggedIn) render();
 });
 
@@ -158,6 +188,43 @@ function updateMonthSelector(){
     });
 }
 
+// ----- PRECIOS -----
+function loadPricesUI() {
+    document.getElementById('p_plan1').value = data.prices.plan1;
+    document.getElementById('p_plan2').value = data.prices.plan2;
+    document.getElementById('p_friday').value = data.prices.friday;
+    document.getElementById('p_pack').value = data.prices.packFriday;
+}
+
+function savePrices() {
+    data.prices.plan1 = parseInt(document.getElementById('p_plan1').value) || 0;
+    data.prices.plan2 = parseInt(document.getElementById('p_plan2').value) || 0;
+    data.prices.friday = parseInt(document.getElementById('p_friday').value) || 0;
+    data.prices.packFriday = parseInt(document.getElementById('p_pack').value) || 0;
+    save();
+    alert("¡Precios actualizados con éxito!");
+    showView('list');
+}
+
+// ----- GASTOS -----
+function addExpense() {
+    let desc = document.getElementById('expDesc').value.trim();
+    let amt = parseInt(document.getElementById('expAmount').value);
+    if(!desc || !amt) return;
+    if(!data.expenses[selectedMonth]) data.expenses[selectedMonth] = [];
+    data.expenses[selectedMonth].push({ id: Date.now(), desc: desc, amount: amt });
+    document.getElementById('expDesc').value = '';
+    document.getElementById('expAmount').value = '';
+    save();
+}
+
+function removeExpense(id) {
+    if(!confirm("¿Eliminar este gasto?")) return;
+    data.expenses[selectedMonth] = data.expenses[selectedMonth].filter(e => e.id !== id);
+    save();
+}
+
+// ----- JUGADORES Y DEUDAS -----
 function addPlayer(){
     let name=document.getElementById('name').value.trim();
     if(!name || data.players.includes(name)) return;
@@ -199,12 +266,12 @@ function deletePayment(player, paymentId) {
 
 function calcDebt(p){
     let mp = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
-    let planPrice = (data.plans && data.plans[p] == 2) ? PRICE_2 : PRICE_1;
+    let planPrice = (data.plans && data.plans[p] == 2) ? data.prices.plan2 : data.prices.plan1;
     let fridayDebt = 0;
     if(!data.fridayPack || !data.fridayPack[p]){
         Object.keys(data.fridayAttendance || {}).forEach(k=>{
             if(k.startsWith(selectedMonth) && data.fridayAttendance[k][p]?.present && !data.fridayAttendance[k][p]?.paid) 
-                fridayDebt += FRIDAY_PRICE;
+                fridayDebt += data.prices.friday;
         });
     }
     return Math.max(0, (planPrice - mp) + fridayDebt);
@@ -223,11 +290,13 @@ function showView(view) {
     document.getElementById('listView').style.display = (view === 'list') ? 'block' : 'none';
     document.getElementById('profileView').style.display = (view === 'profile') ? 'block' : 'none';
     document.getElementById('fridayView').style.display = (view === 'friday') ? 'block' : 'none';
+    document.getElementById('settingsView').style.display = (view === 'settings') ? 'block' : 'none';
+    if(view === 'settings') loadPricesUI();
     render();
 }
 
 function render(){
-    if(!isLoggedIn) return; // No renderizar nada si no está logueado
+    if(!isLoggedIn) return; 
     updateMonthSelector();
     updateRevenueUI();
     if(currentView === 'list') renderList();
@@ -236,18 +305,59 @@ function render(){
 }
 
 function updateRevenueUI() {
-    let cuotas = 0; let sueltos = 0; let packs = 0;
+    let cuotas = 0; let sueltos = 0; let packs = 0; let gastos = 0;
+    
+    // Calcular Ingresos
     if(data.monthPayments && data.monthPayments[selectedMonth]){
         Object.values(data.monthPayments[selectedMonth]).forEach(v=>cuotas+=v);
     }
     Object.keys(data.fridayAttendance || {}).forEach(k=>{
         if(k.startsWith(selectedMonth)){
-            Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=FRIDAY_PRICE; });
+            Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=data.prices.friday; });
         }
     });
-    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs+=PACK_FRIDAY; });
-    document.getElementById('revenueTotal').innerHTML = `Total: $${(cuotas + sueltos + packs).toLocaleString()}`;
-    document.getElementById('revenueBreakdown').innerHTML = `Cuotas: $${cuotas.toLocaleString()} | Viernes: $${sueltos.toLocaleString()} | Packs: $${packs.toLocaleString()}`;
+    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs+=data.prices.packFriday; });
+    
+    let totalIngresos = cuotas + sueltos + packs;
+    
+    // Calcular Gastos
+    if(data.expenses && data.expenses[selectedMonth]){
+        data.expenses[selectedMonth].forEach(e => gastos += e.amount);
+    }
+    
+    let neto = totalIngresos - gastos;
+    
+    document.getElementById('revenueTotal').innerHTML = `
+        <div style="display:flex; justify-content:space-between; color:#22c55e;">
+            <span>📈 Ingresos (Cuotas+Viernes):</span> <b>$${totalIngresos.toLocaleString()}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; color:#ef4444; border-bottom: 1px solid #334155; padding-bottom:5px; margin-bottom:5px;">
+            <span>📉 Gastos Totales:</span> <b>-$${gastos.toLocaleString()}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; color:#38bdf8; font-size:1.2em;">
+            <span>💰 CAJA NETA:</span> <b>$${neto.toLocaleString()}</b>
+        </div>
+    `;
+
+    // Renderizar lista de gastos
+    let elist = document.getElementById('expensesList');
+    if(elist) {
+        elist.innerHTML = '';
+        if(data.expenses && data.expenses[selectedMonth] && data.expenses[selectedMonth].length > 0) {
+            data.expenses[selectedMonth].forEach(e => {
+                elist.innerHTML += `
+                    <div class="expense-item">
+                        <span>${e.desc}</span>
+                        <div>
+                            <b style="color:#ef4444; margin-right:10px;">-$${e.amount.toLocaleString()}</b>
+                            <button class="del-icon" onclick="removeExpense(${e.id})">×</button>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            elist.innerHTML = `<p style="font-size:13px; color:#94a3b8; text-align:center;">Sin gastos registrados en ${selectedMonth}.</p>`;
+        }
+    }
 }
 
 function renderList(){
@@ -281,9 +391,10 @@ function renderList(){
                 <button class='viewBtn' onclick="selectedPlayer='${p}'; showView('profile');">Historial</button>
                 <a href="https://wa.me/?text=${msj}" target="_blank" class="wsBtn" style="margin-top:0">📲 Avisar</a>
             </div>
-            <button class='deleteBtn' onclick="removePlayer('${p}')">Eliminar Jugador</button>`;
+            <button class='deleteBtn' style="padding:8px;" onclick="removePlayer('${p}')">Eliminar Jugador</button>`;
         pd.appendChild(el);
     });
+    
     let fr = document.getElementById('fridays'); fr.innerHTML = '';
     let monthsArr = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
     let parts = selectedMonth.split(" de ");
@@ -313,7 +424,7 @@ function renderProfile(){
                 <span>${h.date} (${h.month})</span>
                 <div>
                     <b style="margin-right:10px;">$${h.amount.toLocaleString()}</b>
-                    <button class="del-hist" onclick="deletePayment('${p}', ${h.id})">×</button>
+                    <button class="del-icon" onclick="deletePayment('${p}', ${h.id})">×</button>
                 </div>
             </div>`;
         });
