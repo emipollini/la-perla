@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>La Perla Admin - Cloud</title>
+<title>La Perla Admin - 2026+</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
@@ -17,7 +17,6 @@
     .player{ background:#0b1220; padding:15px; border-radius:10px; margin-top:10px; border: 1px solid #1e293b; }
     .badge{ display:inline-block; padding:4px 10px; border-radius:8px; font-size:12px; font-weight: bold; margin: 5px 0; }
     .debt{background:orange; color:black;}
-    .small{font-size:14px; opacity:0.85;}
     .paidGreen{background:#22c55e; color:black;}
     .packGray{background:#475569; color:white;}
     .packGreen{background:#10b981; color:white;}
@@ -35,10 +34,10 @@
 </head>
 <body>
 
-<header>🏓 La Perla Admin (Cloud)</header>
+<header>🏓 La Perla Admin (2026+)</header>
 
 <div class="container">
-    <div id="loading">Cargando datos desde la nube...</div>
+    <div id="loading">Conectando con la nube...</div>
 
     <div id="mainContent" style="display:none;">
         <div class="card">
@@ -71,7 +70,7 @@
 </div>
 
 <script>
-// CONFIGURACION DE FIREBASE (Tus datos de la imagen)
+// CONFIGURACION DE FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD1v_l8XF2UVwcXcfNcquhekDv26GNAV8",
   authDomain: "la-perla-admin.firebaseapp.com",
@@ -82,7 +81,6 @@ const firebaseConfig = {
   appId: "1:519870028939:web:9b174bac162ac8dcc2088e"
 };
 
-// Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -93,17 +91,15 @@ const PRICE_2=45000;
 const FRIDAY_PRICE=8000;
 const PACK_FRIDAY=20000;
 
+let now = new Date();
 function getMonthName(date){
     return date.toLocaleString('es-AR',{month:'long',year:'numeric'});
 }
-
-let now = new Date();
 let selectedMonth = getMonthName(now);
 let currentView = 'list';
 let selectedPlayer = null;
 let selectedFriday = null;
 
-// ESCUCHAR CAMBIOS EN TIEMPO REAL
 db.ref('perlaData').on('value', (snapshot) => {
     const cloudData = snapshot.val();
     if(cloudData) {
@@ -121,16 +117,20 @@ function save(){
 
 function setMonth(m){ selectedMonth = m; render(); }
 
+// SELECTOR EXCLUSIVO 2026 EN ADELANTE
 function updateMonthSelector(){
     let sel=document.getElementById('monthSelect');
-    let months=new Set();
-    months.add(getMonthName(now));
-    for(let i=-3; i<=1; i++){
-        let d = new Date(); d.setMonth(d.getMonth() + i);
-        months.add(getMonthName(d));
+    let options = [];
+    
+    // Generar meses desde Enero 2026 hasta Diciembre 2026
+    // (Podés cambiar el '12' por '24' si querés ver hasta el 2027)
+    for(let i = 0; i < 12; i++){
+        let d = new Date(2026, i, 1);
+        options.push(getMonthName(d));
     }
+    
     sel.innerHTML='';
-    Array.from(months).forEach(m=>{
+    options.forEach(m=>{
         let opt=document.createElement('option');
         opt.value=m; opt.textContent=m;
         if(m===selectedMonth) opt.selected=true;
@@ -206,8 +206,9 @@ function renderList(){
     let pd = document.getElementById('players');
     pd.innerHTML = '';
     const search = document.getElementById('searchInput').value.toLowerCase();
-    
-    data.players.filter(p => p.toLowerCase().includes(search)).forEach(p => {
+    let sortedPlayers = [...data.players].sort();
+
+    sortedPlayers.filter(p => p.toLowerCase().includes(search)).forEach(p => {
         let debt = calcDebt(p);
         let state = getState(p);
         let msj = encodeURIComponent(`Hola ${p}! 🏓 Resumen La Perla (${selectedMonth}): Saldo pendiente $${debt}.`);
@@ -248,6 +249,7 @@ function renderList(){
     let parts = selectedMonth.split(" de ");
     let mIdx = monthsArr.indexOf(parts[0].toLowerCase());
     let year = parseInt(parts[1]);
+    
     for(let i=1; i<=31; i++){
         let d = new Date(year, mIdx, i);
         if(d.getMonth() !== mIdx) break;
@@ -280,7 +282,8 @@ function renderFridayView(){
     let f = selectedFriday;
     let k = selectedMonth + '-' + f;
     let html = `<button class='backBtn' onclick="showView('list')">⬅ Volver</button><h2>Viernes ${f}</h2>`;
-    data.players.forEach(p => {
+    let sortedPlayers = [...data.players].sort();
+    sortedPlayers.forEach(p => {
         let a = (data.fridayAttendance && data.fridayAttendance[k]) ? data.fridayAttendance[k][p] || {present:false, paid:false} : {present:false, paid:false};
         html += `
             <div class="player">
