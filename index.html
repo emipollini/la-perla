@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>La Perla Admin - Premium</title>
+<title>La Perla Admin - Premium & Excel</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +70,8 @@
     
     #loginView { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
     .login-box { background: #1e293b; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    
+    .excelBtn { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; margin-top: 15px; }
 </style>
 </head>
 <body>
@@ -94,6 +96,7 @@
             <h3>📅 Mes y Balance</h3>
             <select id="monthSelect" onchange="setMonth(this.value)"></select>
             <div id="revenueTotal" class="rev-detail"></div>
+            <button onclick="exportToCSV()" class="excelBtn">📊 Descargar Resumen (Excel)</button>
         </div>
 
         <div id="listView">
@@ -453,6 +456,50 @@ function toggleFriday(p,d){
 }
 
 function toggleFridayPay(p,d){ let k=selectedMonth+'-'+d; data.fridayAttendance[k][p].paid = !data.fridayAttendance[k][p].paid; save(); }
+
+// FUNCIÓN PARA EXPORTAR A EXCEL (CSV)
+function exportToCSV() {
+    let csv = "Resumen La Perla - " + selectedMonth + "\n\n";
+    
+    csv += "--- JUGADORES ---\n";
+    csv += "Nombre,Estado,Pagado,Deuda\n";
+    
+    let sortedPlayers = [...data.players].sort();
+    sortedPlayers.forEach(p => {
+        let debt = calcDebt(p);
+        let state = getState(p).text;
+        let paid = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
+        csv += `"${p}","${state}","$${paid}","$${debt}"\n`;
+    });
+    
+    csv += "\n--- GASTOS ---\n";
+    csv += "Descripcion,Monto\n";
+    let gastosTotal = 0;
+    if(data.expenses && data.expenses[selectedMonth]) {
+        data.expenses[selectedMonth].forEach(e => {
+            csv += `"${e.desc}","-$${e.amount}"\n`;
+            gastosTotal += e.amount;
+        });
+    }
+    if(gastosTotal === 0) {
+        csv += "Sin gastos registrados,$0\n";
+    } else {
+        csv += `"TOTAL GASTOS","-$${gastosTotal}"\n`;
+    }
+    
+    // "\uFEFF" asegura que Excel lea bien los acentos (UTF-8 con BOM)
+    let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    let link = document.createElement("a");
+    let url = URL.createObjectURL(blob);
+    
+    // El nombre del archivo se genera automáticamente con el mes seleccionado
+    link.setAttribute("href", url);
+    link.setAttribute("download", `La_Perla_${selectedMonth.replace(' de ','_')}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 </script>
 </body>
 </html>
