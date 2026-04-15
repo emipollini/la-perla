@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>La Perla Admin - Cloud</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+    body{ font-family:Arial, sans-serif; margin:0; background:#0f172a; color:#e2e8f0; line-height: 1.5; }
+    header{ background:#111827; padding:20px 15px; text-align:center; font-size:22px; font-weight:bold; border-bottom: 2px solid #1e293b; position: sticky; top:0; z-index:100; }
+    .container{ display:flex; flex-direction: column; padding:15px; gap:15px; }
+    .card{ background:#1e293b; padding:15px; border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    input, button, select{ padding:12px; border-radius:8px; border:none; margin:5px 0; width:100%; box-sizing:border-box; font-size: 16px; }
+    button{ cursor:pointer; font-weight:bold; }
+    button:active { opacity: 0.7; }
+    .player{ background:#0b1220; padding:15px; border-radius:10px; margin-top:10px; border: 1px solid #1e293b; }
+    .badge{ display:inline-block; padding:4px 10px; border-radius:8px; font-size:12px; font-weight: bold; margin: 5px 0; }
+    .debt{background:orange; color:black;}
+    .small{font-size:14px; opacity:0.85;}
+    .paidGreen{background:#22c55e; color:black;}
+    .packGray{background:#475569; color:white;}
+    .packGreen{background:#10b981; color:white;}
+    .deleteBtn{background:#ef4444; color:#fff; margin-top: 10px; font-size: 12px; padding: 5px;}
+    .viewBtn{background:#3b82f6; color:white;}
+    .backBtn{background:#64748b; color:white; margin-bottom: 15px;}
+    .wsBtn{background:#25d366; color:white; text-decoration:none; display:block; text-align:center; padding:12px; border-radius:8px; margin-top:5px; font-weight:bold;}
+    .stateGreen{background:#22c55e; color:black;}
+    .stateYellow{background:#f59e0b; color:black;}
+    .stateRed{background:#ef4444; color:white;}
+    #searchInput { background: #1e293b; color: white; border: 2px solid #334155; margin-bottom: 10px; }
+    .history-item { background: #1e293b; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 14px; display: flex; justify-content: space-between; border-left: 4px solid #38bdf8; }
+    #loading { text-align: center; padding: 20px; font-style: italic; color: #38bdf8; }
+</style>
+</head>
+<body>
+
+<header>🏓 La Perla Admin (Cloud)</header>
+
+<div class="container">
+    <div id="loading">Cargando datos desde la nube...</div>
+
+    <div id="mainContent" style="display:none;">
+        <div class="card">
+            <h3>📅 Mes y Recaudación</h3>
+            <select id="monthSelect" onchange="setMonth(this.value)"></select>
+            <div id="revenue" style="font-weight: bold; color: #38bdf8; margin-top: 10px; font-size: 1.2em;"></div>
+        </div>
+
+        <div class="card">
+            <h3>➕ Agregar Jugador</h3>
+            <input id="name" placeholder="Nombre completo" />
+            <button onclick="addPlayer()" style="background:#38bdf8; color: black;">Agregar a la lista</button>
+        </div>
+
+        <div id="listView">
+            <div class="card">
+                <h3>👥 Jugadores</h3>
+                <input type="text" id="searchInput" placeholder="🔍 Buscar jugador..." onkeyup="render()">
+                <div id="players"></div>
+            </div>
+            <div class="card">
+                <h3>🗓️ Asistencia Viernes</h3>
+                <div id="fridays"></div>
+            </div>
+        </div>
+
+        <div class="card" id="profileView" style="display:none;"></div>
+        <div class="card" id="fridayView" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+// CONFIGURACION DE FIREBASE (Tus datos de la imagen)
+const firebaseConfig = {
+  apiKey: "AIzaSyD1v_l8XF2UVwcXcfNcquhekDv26GNAV8",
+  authDomain: "la-perla-admin.firebaseapp.com",
+  databaseURL: "https://la-perla-admin-default-rtdb.firebaseio.com",
+  projectId: "la-perla-admin",
+  storageBucket: "la-perla-admin.firebasestorage.app",
+  messagingSenderId: "519870028939",
+  appId: "1:519870028939:web:9b174bac162ac8dcc2088e"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let data = { players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{} };
+
+const PRICE_1=30000;
+const PRICE_2=45000;
+const FRIDAY_PRICE=8000;
+const PACK_FRIDAY=20000;
+
+function getMonthName(date){
+    return date.toLocaleString('es-AR',{month:'long',year:'numeric'});
+}
+
+let now = new Date();
+let selectedMonth = getMonthName(now);
+let currentView = 'list';
+let selectedPlayer = null;
+let selectedFriday = null;
+
+// ESCUCHAR CAMBIOS EN TIEMPO REAL
+db.ref('perlaData').on('value', (snapshot) => {
+    const cloudData = snapshot.val();
+    if(cloudData) {
+        data = { ...data, ...cloudData };
+        if(!data.players) data.players = [];
+    }
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    render();
+});
+
+function save(){
+    db.ref('perlaData').set(data);
+}
+
+function setMonth(m){ selectedMonth = m; render(); }
+
+function updateMonthSelector(){
+    let sel=document.getElementById('monthSelect');
+    let months=new Set();
+    months.add(getMonthName(now));
+    for(let i=-3; i<=1; i++){
+        let d = new Date(); d.setMonth(d.getMonth() + i);
+        months.add(getMonthName(d));
+    }
+    sel.innerHTML='';
+    Array.from(months).forEach(m=>{
+        let opt=document.createElement('option');
+        opt.value=m; opt.textContent=m;
+        if(m===selectedMonth) opt.selected=true;
+        sel.appendChild(opt);
+    });
+}
+
+function addPlayer(){
+    let name=document.getElementById('name').value.trim();
+    if(!name || data.players.includes(name)) return;
+    data.players.push(name);
+    document.getElementById('name').value = '';
+    save();
+}
+
+function removePlayer(p){
+    if(!confirm(`¿Borrar definitivamente a ${p}?`)) return;
+    data.players=data.players.filter(x=>x!==p);
+    save();
+}
+
+function payMonth(p){
+    let amount=parseInt(document.getElementById('pay_'+p).value||0);
+    if(!amount) return;
+    if(!data.monthPayments) data.monthPayments = {};
+    if(!data.monthPayments[selectedMonth]) data.monthPayments[selectedMonth]={};
+    data.monthPayments[selectedMonth][p] = (data.monthPayments[selectedMonth][p] || 0) + amount;
+
+    if(!data.history) data.history = {};
+    if(!data.history[p]) data.history[p] = [];
+    data.history[p].push({ date: new Date().toLocaleDateString('es-AR'), amount: amount, month: selectedMonth });
+    save();
+}
+
+function calcDebt(p){
+    let mp = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
+    let planPrice = (data.plans && data.plans[p] == 2) ? PRICE_2 : PRICE_1;
+    let fridayDebt = 0;
+    if(!data.fridayPack || !data.fridayPack[p]){
+        Object.keys(data.fridayAttendance || {}).forEach(k=>{
+            if(k.startsWith(selectedMonth) && data.fridayAttendance[k][p]?.present && !data.fridayAttendance[k][p]?.paid) 
+                fridayDebt += FRIDAY_PRICE;
+        });
+    }
+    return Math.max(0, (planPrice - mp) + fridayDebt);
+}
+
+function getState(p){
+    let debt = calcDebt(p);
+    let paid = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
+    if(debt <= 0) return {text:'AL DÍA', cls:'stateGreen'};
+    if(paid > 0) return {text:'PARCIAL', cls:'stateYellow'};
+    return {text:'EN DEUDA', cls:'stateRed'};
+}
+
+function showView(view) {
+    currentView = view;
+    document.getElementById('listView').style.display = (view === 'list') ? 'block' : 'none';
+    document.getElementById('profileView').style.display = (view === 'profile') ? 'block' : 'none';
+    document.getElementById('fridayView').style.display = (view === 'friday') ? 'block' : 'none';
+    render();
+}
+
+function render(){
+    updateMonthSelector();
+    document.getElementById('revenue').innerHTML="Recaudado: $"+calcRevenue().toLocaleString();
+    if(currentView === 'list') renderList();
+    else if(currentView === 'profile') renderProfile();
+    else if(currentView === 'friday') renderFridayView();
+}
+
+function renderList(){
+    let pd = document.getElementById('players');
+    pd.innerHTML = '';
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    
+    data.players.filter(p => p.toLowerCase().includes(search)).forEach(p => {
+        let debt = calcDebt(p);
+        let state = getState(p);
+        let msj = encodeURIComponent(`Hola ${p}! 🏓 Resumen La Perla (${selectedMonth}): Saldo pendiente $${debt}.`);
+        let packActivo = data.fridayPack && data.fridayPack[p];
+        
+        let el = document.createElement('div');
+        el.className='player';
+        el.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b>${p}</b> 
+                <span class='badge ${state.cls}'>${state.text}</span>
+            </div>
+            <span class='badge debt'>Deuda: $${debt.toLocaleString()}</span>
+            <div style="display:flex; gap:10px;">
+                <select style="flex:1" onchange="if(!data.plans) data.plans={}; data.plans['${p}']=parseInt(this.value); save();">
+                    <option value="1" ${(!data.plans || data.plans[p]!=2)?'selected':''}>1 vez/sem</option>
+                    <option value="2" ${(data.plans && data.plans[p]==2)?'selected':''}>2 veces/sem</option>
+                </select>
+                <button class="${packActivo?'packGreen':'packGray'}" style="flex:1; font-size:12px;" onclick="if(!data.fridayPack) data.fridayPack={}; data.fridayPack['${p}']=!data.fridayPack['${p}']; save();">
+                    ${packActivo?'Pack Viernes ✔':'Pack Viernes ✖'}
+                </button>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input id='pay_${p}' type='number' placeholder='Monto' style="flex:1"/>
+                <button class='paidGreen' onclick="payMonth('${p}')" style="flex:0.5">Cobrar</button>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <button class='viewBtn' onclick="selectedPlayer='${p}'; showView('profile');">Historial</button>
+                <a href="https://wa.me/?text=${msj}" target="_blank" class="wsBtn" style="margin-top:0">📲 Avisar</a>
+            </div>
+            <button class='deleteBtn' onclick="removePlayer('${p}')">Eliminar Jugador</button>`;
+        pd.appendChild(el);
+    });
+
+    let fr = document.getElementById('fridays');
+    fr.innerHTML = '';
+    let monthsArr = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    let parts = selectedMonth.split(" de ");
+    let mIdx = monthsArr.indexOf(parts[0].toLowerCase());
+    let year = parseInt(parts[1]);
+    for(let i=1; i<=31; i++){
+        let d = new Date(year, mIdx, i);
+        if(d.getMonth() !== mIdx) break;
+        if(d.getDay() === 5){
+            let b = document.createElement('button');
+            b.className='viewBtn'; b.style.marginBottom='10px';
+            b.textContent = `Asistencia Viernes ${i}`;
+            b.onclick = () => { selectedFriday = i; showView('friday'); };
+            fr.appendChild(b);
+        }
+    }
+}
+
+function renderProfile(){
+    let p = selectedPlayer;
+    let history = data.history && data.history[p] ? data.history[p] : [];
+    document.getElementById('profileView').innerHTML = `
+        <button class='backBtn' onclick="showView('list')">⬅ Volver</button>
+        <h2>Historial de ${p}</h2>
+        ${history.length === 0 ? '<p>Sin pagos registrados.</p>' : 
+        history.slice().reverse().map(h => `
+            <div class="history-item">
+                <span>${h.date} (${h.month})</span>
+                <b>$${h.amount.toLocaleString()}</b>
+            </div>`).join('')}
+        <button class='deleteBtn' style="margin-top:20px; background:#64748b" onclick="if(confirm('¿Reiniciar historial?')) { data.history['${p}']=[]; save(); }">Limpiar historial</button>`;
+}
+
+function renderFridayView(){
+    let f = selectedFriday;
+    let k = selectedMonth + '-' + f;
+    let html = `<button class='backBtn' onclick="showView('list')">⬅ Volver</button><h2>Viernes ${f}</h2>`;
+    data.players.forEach(p => {
+        let a = (data.fridayAttendance && data.fridayAttendance[k]) ? data.fridayAttendance[k][p] || {present:false, paid:false} : {present:false, paid:false};
+        html += `
+            <div class="player">
+                <b>${p}</b><br>
+                <div style="display:flex; gap:10px;">
+                    <button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})">
+                        ${a.present?'✔ Presente':'✖ Ausente'}
+                    </button>
+                    <button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}>
+                        ${a.paid?'💰 Pagó':'⏳ No pagó'}
+                    </button>
+                </div>
+            </div>`;
+    });
+    document.getElementById('fridayView').innerHTML = html;
+}
+
+function toggleFriday(p,d){
+    let k=selectedMonth+'-'+d;
+    if(!data.fridayAttendance) data.fridayAttendance={};
+    if(!data.fridayAttendance[k]) data.fridayAttendance[k]={};
+    if(!data.fridayAttendance[k][p]) data.fridayAttendance[k][p]={present:false,paid:false};
+    data.fridayAttendance[k][p].present = !data.fridayAttendance[k][p].present;
+    if(!data.fridayAttendance[k][p].present) data.fridayAttendance[k][p].paid = false;
+    save();
+}
+
+function toggleFridayPay(p,d){
+    let k=selectedMonth+'-'+d;
+    data.fridayAttendance[k][p].paid = !data.fridayAttendance[k][p].paid;
+    save();
+}
+
+function calcRevenue(){
+    let total=0;
+    if(data.monthPayments && data.monthPayments[selectedMonth]){
+        Object.values(data.monthPayments[selectedMonth]).forEach(v=>total+=v);
+    }
+    Object.keys(data.fridayAttendance || {}).forEach(k=>{
+        if(k.startsWith(selectedMonth)){
+            Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) total+=FRIDAY_PRICE; });
+        }
+    });
+    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) total+=PACK_FRIDAY; });
+    return total;
+}
+</script>
+</body>
+</html>
