@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>La Perla Admin - Pro Max</title>
+<title>Sistema de Gestión de Clubes</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,86 +17,75 @@
     header { 
         background: rgba(17, 24, 39, 0.85); 
         backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        padding: 15px; text-align: center; font-size: 22px; font-weight: 700; 
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-        position: sticky; top: 0; z-index: 100; 
-        display: flex; flex-direction: column; align-items: center;
+        padding: 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+        position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; align-items: center;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
     
-    .header-top { display: flex; justify-content: center; width: 100%; position: relative; align-items: center; margin-bottom: 10px; }
+    .header-top { display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 12px; }
+    .club-identity { display: flex; align-items: center; gap: 10px; }
+    .club-logo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: #334155; }
+    .club-name { font-size: 18px; font-weight: 700; color: #f8fafc; }
 
-    /* Estilos para las solapas (Tabs) */
     .tabs-container { display: flex; width: 100%; background: #1e293b; border-radius: 10px; overflow: hidden; }
-    .tab-btn { 
-        flex: 1; padding: 10px 5px; font-size: 14px; background: transparent; color: #94a3b8; 
-        border: none; margin: 0; border-radius: 0; box-shadow: none; font-weight: 600;
-        transition: background 0.2s, color 0.2s;
-    }
+    .tab-btn { flex: 1; padding: 10px 5px; font-size: 14px; background: transparent; color: #94a3b8; border: none; font-weight: 600; transition: 0.2s; margin:0;}
     .tab-btn.active { background: #38bdf8; color: #0f172a; }
 
     .container { display: flex; flex-direction: column; padding: 15px; gap: 15px; }
-    .card { background: #1e293b; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); }
+    .card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
     .card h3 { margin-top: 0; font-weight: 600; color: #f8fafc; margin-bottom: 15px; }
 
-    input, select { 
-        padding: 14px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: white;
-        margin: 5px 0; width: 100%; box-sizing: border-box; font-size: 16px; font-family: 'Poppins', sans-serif;
-        outline: none; transition: border-color 0.2s;
-    }
+    input, select { padding: 14px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: white; width: 100%; box-sizing: border-box; font-size: 16px; font-family: 'Poppins'; outline: none; margin: 5px 0; transition: border-color 0.2s;}
     input:focus, select:focus { border-color: #38bdf8; }
 
-    button { 
-        padding: 14px; border-radius: 10px; border: none; margin: 5px 0; width: 100%; box-sizing: border-box; 
-        font-size: 15px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; 
-        transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    button:active { transform: scale(0.96); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    button { padding: 14px; border-radius: 10px; border: none; width: 100%; font-size: 15px; font-weight: 600; font-family: 'Poppins'; cursor: pointer; transition: transform 0.1s; margin: 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+    button:active { transform: scale(0.96); box-shadow: 0 1px 2px rgba(0,0,0,0.2);}
 
-    .player { background: #0b1220; padding: 18px; border-radius: 14px; margin-top: 15px; border: 1px solid #1e293b; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; margin: 5px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .player { background: #0b1220; padding: 18px; border-radius: 14px; margin-top: 15px; border: 1px solid #1e293b; box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; margin: 5px 0; text-transform: uppercase; }
     
-    .debt { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.5); }
+    .debt { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.5); box-shadow:none;}
     .paidGreen { background: #22c55e; color: #000; }
-    .packGray { background: #334155; color: white; border: 1px solid #475569; }
+    .stateRed { background: #ef4444; color: #fff; }
+    .stateYellow { background: #facc15; color: #000; }
+    .stateGreen { background: #22c55e; color: #000; }
+    .packGray { background: #334155; color: white; border: 1px solid #475569; box-shadow:none;}
     .packGreen { background: #10b981; color: #000; border: 1px solid #10b981;}
-    .deleteBtn { background: transparent; color: #ef4444; border: 1px solid #ef4444; margin-top: 15px; font-size: 13px;}
+    .deleteBtn { background: transparent; color: #ef4444; border: 1px solid #ef4444; margin-top: 15px; font-size: 13px; box-shadow:none;}
     .viewBtn { background: #3b82f6; color: white; }
     .backBtn { background: #475569; color: white; margin-bottom: 20px; }
     .wsBtn { background: #25d366; color: white; text-decoration: none; display: block; text-align: center; padding: 14px; border-radius: 10px; margin-top: 5px; font-weight: 600;}
+
+    .rev-detail { font-size: 14px; color: #94a3b8; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1e293b; margin-top: 15px; }
+    .income-item { border-left: 4px solid #22c55e; background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .expense-item { border-left: 4px solid #ef4444; background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .history-item { border-left: 4px solid #38bdf8; background: #1e293b; padding: 12px; border-radius: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px;}
     
-    .stateGreen { background: #22c55e; color: #000; }
-    .stateYellow { background: #facc15; color: #000; }
-    .stateRed { background: #ef4444; color: #fff; }
-    
-    .history-item { background: #1e293b; padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #38bdf8; }
-    .expense-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ef4444; }
-    .income-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #22c55e; }
-    .rev-detail { font-size: 14px; color: #94a3b8; margin-top: 15px; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1e293b; }
-    
-    .del-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 30px; height: 30px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor:pointer;}
-    .btn-config { position: absolute; right: 0; background: transparent; border: 1px solid rgba(56, 189, 248, 0.5); color: #38bdf8; padding: 6px 12px; width: auto; border-radius: 8px; font-size: 14px; box-shadow:none;}
+    .del-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 30px; height: 30px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size:16px; cursor:pointer; margin:0; box-shadow:none;}
+    .btn-config { background: transparent; border: 1px solid rgba(56, 189, 248, 0.5); color: #38bdf8; padding: 6px 12px; width: auto; border-radius: 8px; font-size: 14px; margin: 0; box-shadow:none;}
     
     #loginView { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
-    .login-box { background: #1e293b; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .login-box { background: #1e293b; padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 25px rgba(0,0,0,0.5);}
     
-    .excelBtn { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; margin-top: 15px; }
-    
-    /* Contenedores de las solapas */
     .tab-content { display: none; flex-direction: column; gap: 15px; }
     .tab-content.active { display: flex; }
+    .excelBtn { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; margin-top: 15px; }
+    #searchInput { background: #0f172a; margin-bottom: 15px; }
 </style>
 </head>
 <body>
 
 <header id="mainHeader" style="display:none;">
     <div class="header-top">
-        🏓 La Perla
-        <button class="btn-config" onclick="showView('settings')">⚙️ Precios</button>
+        <div class="club-identity">
+            <img id="headerLogo" src="" class="club-logo" style="display:none;">
+            <span id="headerName" class="club-name">Mi Club</span>
+        </div>
+        <button class="btn-config" onclick="showView('settings')">⚙️ Ajustes</button>
     </div>
     <div class="tabs-container">
-        <button id="btnTabResumen" class="tab-btn active" onclick="switchTab('resumen')">📊 Resumen</button>
-        <button id="btnTabJugadores" class="tab-btn" onclick="switchTab('jugadores')">👥 Jugadores</button>
+        <button id="btnTabResumen" class="tab-btn active" onclick="switchTab('resumen')">📊 Balance</button>
+        <button id="btnTabJugadores" class="tab-btn" onclick="switchTab('jugadores')">👥 Lista</button>
         <button id="btnTabViernes" class="tab-btn" onclick="switchTab('viernes')">🗓️ Viernes</button>
     </div>
 </header>
@@ -104,10 +93,10 @@
 <div class="container">
     <div id="loginView">
         <div class="login-box">
-            <h2 style="color: #38bdf8; margin-top:0;">Acceso Restringido</h2>
+            <h2 style="color: #38bdf8; margin-top:0;">Acceso Sistema</h2>
             <input type="password" id="passInput" placeholder="Contraseña" style="text-align: center;">
             <button onclick="checkLogin()" style="background: #38bdf8; color: black; margin-top: 15px;">Entrar</button>
-            <p id="loginError" style="color: #ef4444; display: none; margin-top: 10px; font-size: 14px;">❌ Contraseña incorrecta</p>
+            <p id="loginError" style="color: #ef4444; display: none; margin-top: 10px;">❌ Contraseña incorrecta</p>
         </div>
     </div>
 
@@ -115,16 +104,16 @@
         
         <div id="tabResumen" class="tab-content active">
             <div class="card">
-                <h3>📅 Mes y Balance</h3>
+                <h3>💰 Estado de Caja</h3>
                 <select id="monthSelect" onchange="setMonth(this.value)"></select>
                 <div id="revenueTotal" class="rev-detail"></div>
-                <button onclick="exportToCSV()" class="excelBtn">📊 Descargar Excel</button>
+                <button onclick="exportToCSV()" class="excelBtn">📊 Exportar Excel</button>
             </div>
             
             <div class="card">
                 <h3>💵 Otros Ingresos</h3>
                 <div style="display:flex; gap:5px;">
-                    <input id="incDesc" placeholder="Ej: Clase..." style="flex:2; margin:0;"/>
+                    <input id="incDesc" placeholder="Ej: Venta Paleta" style="flex:2; margin:0;"/>
                     <input id="incAmount" type="number" placeholder="$ Monto" style="flex:1.2; margin:0;"/>
                     <button class="paidGreen" onclick="addOtherIncome()" style="flex:1; margin:0;">Cargar</button>
                 </div>
@@ -132,9 +121,9 @@
             </div>
 
             <div class="card">
-                <h3>💸 Gastos</h3>
+                <h3>💸 Gastos del Mes</h3>
                 <div style="display:flex; gap:5px;">
-                    <input id="expDesc" placeholder="Ej: Alquiler..." style="flex:2; margin:0;"/>
+                    <input id="expDesc" placeholder="Ej: Alquiler" style="flex:2; margin:0;"/>
                     <input id="expAmount" type="number" placeholder="$ Monto" style="flex:1.2; margin:0;"/>
                     <button class="stateRed" onclick="addExpense()" style="flex:1; margin:0; background:#ef4444;">Cargar</button>
                 </div>
@@ -144,7 +133,7 @@
 
         <div id="tabJugadores" class="tab-content">
             <div class="card">
-                <h3>➕ Agregar Jugador</h3>
+                <h3>➕ Nuevo Jugador</h3>
                 <div style="display:flex; gap:5px;">
                     <input id="name" placeholder="Nombre completo" style="margin:0;" />
                     <button onclick="addPlayer()" style="background:#38bdf8; color: black; margin:0; width:100px;">Agregar</button>
@@ -165,27 +154,50 @@
                 <div id="fridays"></div>
             </div>
         </div>
-
     </div>
 
     <div class="card" id="profileView" style="display:none;"></div>
     <div class="card" id="fridayView" style="display:none;"></div>
+    
     <div class="card" id="settingsView" style="display:none;">
-        <button class='backBtn' onclick="showView('list')">⬅ Volver</button>
-        <h3 style="color:#38bdf8;">⚙️ Configurar Precios</h3>
-        <label style="font-size: 14px;">Cuota 1 vez/sem ($):</label>
-        <input id="p_plan1" type="number"/>
-        <label style="font-size: 14px;">Cuota 2 veces/sem ($):</label>
-        <input id="p_plan2" type="number"/>
-        <label style="font-size: 14px;">Viernes Suelto ($):</label>
-        <input id="p_friday" type="number"/>
-        <label style="font-size: 14px;">Pack Viernes ($):</label>
-        <input id="p_pack" type="number"/>
-        <button class="paidGreen" onclick="savePrices()" style="margin-top:15px;">Guardar</button>
+        <button class='backBtn' onclick="showView('list')">⬅ Volver al sistema</button>
+        <h3 style="color:#38bdf8; margin-top:10px;">⚙️ Configuración del Club</h3>
+        
+        <div style="background: #0b1220; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #1e293b;">
+            <p style="margin-top:0; color:#38bdf8; font-weight:600;">Identidad del Club</p>
+            <label style="font-size:13px;">Nombre del Club:</label>
+            <input id="conf_clubName" placeholder="Ej: La Perla"/>
+            
+            <label style="font-size:13px; display:block; margin-top:10px;">Escudo del Club (Subir desde equipo):</label>
+            <input type="file" id="logoUpload" accept="image/*" style="background:transparent; padding:0; border:none; margin-bottom:5px;" onchange="handleLogoUpload(event)">
+            
+            <div id="logoPreviewContainer" style="display:none; text-align:center; margin: 10px 0;">
+                <img id="logoPreview" src="" style="width:70px; height:70px; border-radius:50%; object-fit:cover; border:2px solid #38bdf8;">
+                <p style="font-size:11px; color:#94a3b8; margin:5px 0 0 0;">Vista previa</p>
+            </div>
+            
+            <input type="hidden" id="conf_clubLogo" />
+
+            <button class="paidGreen" onclick="saveBranding()" style="margin-top:15px;">Guardar Identidad</button>
+        </div>
+
+        <div style="background: #0b1220; padding: 15px; border-radius: 12px; border: 1px solid #1e293b;">
+            <p style="margin-top:0; color:#38bdf8; font-weight:600;">Precios Mensuales</p>
+            <label style="font-size:13px;">Cuota 1 vez/sem ($):</label>
+            <input id="p_plan1" type="number"/>
+            <label style="font-size:13px;">Cuota 2 veces/sem ($):</label>
+            <input id="p_plan2" type="number"/>
+            <label style="font-size:13px;">Viernes Suelto ($):</label>
+            <input id="p_friday" type="number"/>
+            <label style="font-size:13px;">Pack Viernes ($):</label>
+            <input id="p_pack" type="number"/>
+            <button class="paidGreen" onclick="savePrices()" style="margin-top:15px;">Guardar Precios</button>
+        </div>
     </div>
 </div>
 
 <script>
+// AQUÍ PEGÁS LAS LLAVES DE CADA CLUB NUEVO
 const firebaseConfig = {
   apiKey: "AIzaSyD1v_l8XF2UVwcXcfNcquhekDv26GNAV8",
   authDomain: "la-perla-admin.firebaseapp.com",
@@ -199,12 +211,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const MASTER_PASS = "19122001";
+const MASTER_PASS = "19122001"; 
 let isLoggedIn = false;
 let currentTabState = 'resumen'; 
 
 let data = { 
     players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{}, expenses:{}, otherIncome:{},
+    branding: { name: "Mi Club", logo: "" },
     prices: { plan1: 30000, plan2: 45000, friday: 8000, packFriday: 20000 }
 };
 
@@ -238,14 +251,76 @@ db.ref('perlaData').on('value', (snapshot) => {
         if(!data.prices) data.prices = { plan1: 30000, plan2: 45000, friday: 8000, packFriday: 20000 };
         if(!data.expenses) data.expenses = {};
         if(!data.otherIncome) data.otherIncome = {};
+        if(!data.branding) data.branding = { name: "Mi Club", logo: "" };
     }
+    updateBrandingUI();
     if(isLoggedIn) render();
 });
 
 function save(){ db.ref('perlaData').set(data); }
-function setMonth(m){ selectedMonth = m; render(); }
 
-// LOGICA DE SOLAPAS (TABS)
+function updateBrandingUI() {
+    document.getElementById('headerName').textContent = data.branding.name;
+    if(data.branding.logo && data.branding.logo !== "") {
+        document.getElementById('headerLogo').src = data.branding.logo;
+        document.getElementById('headerLogo').style.display = 'block';
+    } else {
+        document.getElementById('headerLogo').style.display = 'none';
+    }
+}
+
+// NUEVA FUNCIÓN: COMPRIMIR Y GUARDAR LA FOTO
+function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Usamos un "lienzo" invisible para achicar la imagen a 200px (Súper ligero)
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 200;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+            } else {
+                if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+            }
+
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Convertimos la imagen achicada en código Base64
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+            // Guardamos el código y mostramos la vista previa
+            document.getElementById('conf_clubLogo').value = dataUrl;
+            document.getElementById('logoPreview').src = dataUrl;
+            document.getElementById('logoPreviewContainer').style.display = 'block';
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function saveBranding() {
+    data.branding.name = document.getElementById('conf_clubName').value || "Mi Club";
+    data.branding.logo = document.getElementById('conf_clubLogo').value || ""; // Ahora toma el Base64
+    save(); alert("Identidad actualizada correctamente.");
+}
+
+function savePrices() {
+    data.prices.plan1 = parseInt(document.getElementById('p_plan1').value) || 0;
+    data.prices.plan2 = parseInt(document.getElementById('p_plan2').value) || 0;
+    data.prices.friday = parseInt(document.getElementById('p_friday').value) || 0;
+    data.prices.packFriday = parseInt(document.getElementById('p_pack').value) || 0;
+    save(); alert("Precios actualizados.");
+}
+
 function switchTab(tabName) {
     currentTabState = tabName;
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -264,31 +339,44 @@ function switchTab(tabName) {
     render();
 }
 
+function showView(view) {
+    currentView = view;
+    document.querySelector('.tabs-container').style.display = (view === 'list') ? 'flex' : 'none';
+    document.getElementById('mainContent').style.display = (view === 'list') ? 'block' : 'none';
+    document.getElementById('profileView').style.display = (view === 'profile') ? 'block' : 'none';
+    document.getElementById('fridayView').style.display = (view === 'friday') ? 'block' : 'none';
+    document.getElementById('settingsView').style.display = (view === 'settings') ? 'block' : 'none';
+    
+    if(view === 'settings') {
+        document.getElementById('conf_clubName').value = data.branding.name;
+        document.getElementById('conf_clubLogo').value = data.branding.logo;
+        
+        // Mostrar vista previa si ya hay un logo guardado
+        if(data.branding.logo && data.branding.logo !== "") {
+            document.getElementById('logoPreview').src = data.branding.logo;
+            document.getElementById('logoPreviewContainer').style.display = 'block';
+        } else {
+            document.getElementById('logoPreviewContainer').style.display = 'none';
+        }
+
+        document.getElementById('p_plan1').value = data.prices.plan1;
+        document.getElementById('p_plan2').value = data.prices.plan2;
+        document.getElementById('p_friday').value = data.prices.friday;
+        document.getElementById('p_pack').value = data.prices.packFriday;
+    }
+    render();
+}
+
+function setMonth(m){ selectedMonth = m; render(); }
+
 function updateMonthSelector(){
     let sel=document.getElementById('monthSelect');
     if(sel.options.length > 0) return;
-    let options = [];
-    for(let i = 0; i < 12; i++){ let d = new Date(2026, i, 1); options.push(getMonthName(d)); }
-    sel.innerHTML='';
-    options.forEach(m=>{
-        let opt=document.createElement('option'); opt.value=m; opt.textContent=m;
-        if(m===selectedMonth) opt.selected=true; sel.appendChild(opt);
-    });
-}
-
-function loadPricesUI() {
-    document.getElementById('p_plan1').value = data.prices.plan1;
-    document.getElementById('p_plan2').value = data.prices.plan2;
-    document.getElementById('p_friday').value = data.prices.friday;
-    document.getElementById('p_pack').value = data.prices.packFriday;
-}
-
-function savePrices() {
-    data.prices.plan1 = parseInt(document.getElementById('p_plan1').value) || 0;
-    data.prices.plan2 = parseInt(document.getElementById('p_plan2').value) || 0;
-    data.prices.friday = parseInt(document.getElementById('p_friday').value) || 0;
-    data.prices.packFriday = parseInt(document.getElementById('p_pack').value) || 0;
-    save(); alert("Precios guardados"); showView('list');
+    for(let i = 0; i < 12; i++){ 
+        let d = new Date(2026, i, 1); 
+        let opt=document.createElement('option'); opt.value=getMonthName(d); opt.textContent=getMonthName(d);
+        if(opt.value===selectedMonth) opt.selected=true; sel.appendChild(opt);
+    }
 }
 
 function addOtherIncome() {
@@ -297,14 +385,12 @@ function addOtherIncome() {
     if(!desc || !amt) return;
     if(!data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth] = [];
     data.otherIncome[selectedMonth].push({ id: Date.now(), desc: desc, amount: amt });
-    document.getElementById('incDesc').value = ''; document.getElementById('incAmount').value = '';
-    save();
+    document.getElementById('incDesc').value = ''; document.getElementById('incAmount').value = ''; save();
 }
 
 function removeOtherIncome(id) {
     if(!confirm("¿Borrar este ingreso?")) return;
-    data.otherIncome[selectedMonth] = data.otherIncome[selectedMonth].filter(e => e.id !== id);
-    save();
+    data.otherIncome[selectedMonth] = data.otherIncome[selectedMonth].filter(e => e.id !== id); save();
 }
 
 function addExpense() {
@@ -313,14 +399,12 @@ function addExpense() {
     if(!desc || !amt) return;
     if(!data.expenses[selectedMonth]) data.expenses[selectedMonth] = [];
     data.expenses[selectedMonth].push({ id: Date.now(), desc: desc, amount: amt });
-    document.getElementById('expDesc').value = ''; document.getElementById('expAmount').value = '';
-    save();
+    document.getElementById('expDesc').value = ''; document.getElementById('expAmount').value = ''; save();
 }
 
 function removeExpense(id) {
     if(!confirm("¿Borrar este gasto?")) return;
-    data.expenses[selectedMonth] = data.expenses[selectedMonth].filter(e => e.id !== id);
-    save();
+    data.expenses[selectedMonth] = data.expenses[selectedMonth].filter(e => e.id !== id); save();
 }
 
 function addPlayer(){
@@ -384,23 +468,9 @@ function getState(p){
     return {text:'EN DEUDA', cls:'stateRed'};
 }
 
-function showView(view) {
-    currentView = view;
-    // Ocultar tabs si no estamos en lista principal
-    document.querySelector('.tabs-container').style.display = (view === 'list') ? 'flex' : 'none';
-    
-    document.getElementById('mainContent').style.display = (view === 'list') ? 'block' : 'none';
-    document.getElementById('profileView').style.display = (view === 'profile') ? 'block' : 'none';
-    document.getElementById('fridayView').style.display = (view === 'friday') ? 'block' : 'none';
-    document.getElementById('settingsView').style.display = (view === 'settings') ? 'block' : 'none';
-    if(view === 'settings') loadPricesUI();
-    render();
-}
-
 function render(){
     if(!isLoggedIn) return; 
     updateMonthSelector(); 
-    
     if(currentView === 'list') {
         if(currentTabState === 'resumen') updateRevenueUI();
         if(currentTabState === 'jugadores') renderPlayers();
@@ -412,18 +482,11 @@ function render(){
 
 function updateRevenueUI() {
     let cuotas = 0; let sueltos = 0; let packs = 0; let gastos = 0; let otrosIng = 0;
-    
-    if(data.monthPayments && data.monthPayments[selectedMonth]){
-        Object.values(data.monthPayments[selectedMonth]).forEach(v=>cuotas+=v);
-    }
+    if(data.monthPayments && data.monthPayments[selectedMonth]) Object.values(data.monthPayments[selectedMonth]).forEach(v=>cuotas+=v);
     Object.keys(data.fridayAttendance || {}).forEach(k=>{
-        if(k.startsWith(selectedMonth)){
-            Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=data.prices.friday; });
-        }
+        if(k.startsWith(selectedMonth)) Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=data.prices.friday; });
     });
-    // Se asume que si tienen el pack activo, ingresó esa plata este mes
     data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs+=data.prices.packFriday; });
-    
     if(data.expenses && data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => gastos += e.amount);
     if(data.otherIncome && data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => otrosIng += e.amount);
     
@@ -442,16 +505,13 @@ function updateRevenueUI() {
         <div style="display:flex; justify-content:space-between; color:#38bdf8; font-size:1.3em;"><span>💰 CAJA NETA:</span> <b>$${neto.toLocaleString()}</b></div>
     `;
 
-    // Render listas de gastos e ingresos
-    let ilist = document.getElementById('incomeList');
-    ilist.innerHTML = '';
+    let ilist = document.getElementById('incomeList'); ilist.innerHTML = '';
     if(data.otherIncome && data.otherIncome[selectedMonth]) {
         data.otherIncome[selectedMonth].forEach(e => {
             ilist.innerHTML += `<div class="income-item"><span>${e.desc}</span><div><b style="color:#22c55e; margin-right:10px;">+$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeOtherIncome(${e.id})">×</button></div></div>`;
         });
     }
-    let elist = document.getElementById('expensesList');
-    elist.innerHTML = '';
+    let elist = document.getElementById('expensesList'); elist.innerHTML = '';
     if(data.expenses && data.expenses[selectedMonth]) {
         data.expenses[selectedMonth].forEach(e => {
             elist.innerHTML += `<div class="expense-item"><span>${e.desc}</span><div><b style="color:#ef4444; margin-right:10px;">-$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeExpense(${e.id})">×</button></div></div>`;
@@ -465,7 +525,7 @@ function renderPlayers(){
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.filter(p => p.toLowerCase().includes(search)).forEach(p => {
         let debt = calcDebt(p); let state = getState(p);
-        let msj = encodeURIComponent(`Hola ${p}! 🏓 Resumen La Perla (${selectedMonth}): Saldo pendiente $${debt}.`);
+        let msj = encodeURIComponent(`Hola ${p}! 🏓 Resumen ${data.branding.name} (${selectedMonth}): Saldo pendiente $${debt}.`);
         let packActivo = data.fridayPack && data.fridayPack[p];
         let el = document.createElement('div'); el.className='player';
         el.innerHTML = `
@@ -531,7 +591,7 @@ function renderFridayView(){
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.forEach(p => {
         let a = (data.fridayAttendance && data.fridayAttendance[k]) ? data.fridayAttendance[k][p] || {present:false, paid:false} : {present:false, paid:false};
-        html += `<div class="player"><b>${p}</b><div style="display:flex; gap:10px; margin-top:10px;"><button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})"> ${a.present?'✔ Presente':'✖ Ausente'} </button><button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}> ${a.paid?'💰 Pagó':'⏳ No pagó'} </button></div></div>`;
+        html += `<div class="player" style="margin-top:10px;"><b style="font-size:1.1em;">${p}</b><div style="display:flex; gap:10px; margin-top:10px;"><button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})"> ${a.present?'✔ Presente':'✖ Ausente'} </button><button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}> ${a.paid?'💰 Pagó':'⏳ No pagó'} </button></div></div>`;
     });
     document.getElementById('fridayView').innerHTML = html;
 }
@@ -542,12 +602,13 @@ function toggleFriday(p,d){
     if(!data.fridayAttendance[k]) data.fridayAttendance[k]={};
     if(!data.fridayAttendance[k][p]) data.fridayAttendance[k][p]={present:false,paid:false};
     data.fridayAttendance[k][p].present = !data.fridayAttendance[k][p].present;
+    if(!data.fridayAttendance[k][p].present) data.fridayAttendance[k][p].paid = false;
     save();
 }
 function toggleFridayPay(p,d){ let k=selectedMonth+'-'+d; data.fridayAttendance[k][p].paid = !data.fridayAttendance[k][p].paid; save(); }
 
 function exportToCSV() {
-    let csv = "Resumen La Perla - " + selectedMonth + "\n\n";
+    let csv = "Resumen " + data.branding.name + " - " + selectedMonth + "\n\n";
     csv += "Nombre,Plan,Pagado,Deuda\n";
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.forEach(p => {
@@ -563,7 +624,8 @@ function exportToCSV() {
     let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     let link = document.createElement("a");
     link.setAttribute("href", URL.createObjectURL(blob));
-    link.setAttribute("download", `La_Perla_${selectedMonth.replace(/ /g,'_')}.csv`);
+    let fileName = data.branding.name.replace(/ /g,'_') + "_" + selectedMonth.replace(/ /g,'_') + ".csv";
+    link.setAttribute("download", fileName);
     link.click();
 }
 </script>
