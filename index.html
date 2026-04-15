@@ -197,7 +197,7 @@
 </div>
 
 <script>
-// AQUÍ PEGÁS LAS LLAVES DE CADA CLUB NUEVO
+// TUS LLAVES ORIGINALES DE LA PERLA
 const firebaseConfig = {
   apiKey: "AIzaSyD1v_l8XF2UVwcXcfNcquhekDv26GNAV8",
   authDomain: "la-perla-admin.firebaseapp.com",
@@ -269,7 +269,6 @@ function updateBrandingUI() {
     }
 }
 
-// NUEVA FUNCIÓN: COMPRIMIR Y GUARDAR LA FOTO
 function handleLogoUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -278,7 +277,6 @@ function handleLogoUpload(event) {
     reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-            // Usamos un "lienzo" invisible para achicar la imagen a 200px (Súper ligero)
             const canvas = document.createElement('canvas');
             const MAX_SIZE = 200;
             let width = img.width;
@@ -294,10 +292,8 @@ function handleLogoUpload(event) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Convertimos la imagen achicada en código Base64
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
-            // Guardamos el código y mostramos la vista previa
             document.getElementById('conf_clubLogo').value = dataUrl;
             document.getElementById('logoPreview').src = dataUrl;
             document.getElementById('logoPreviewContainer').style.display = 'block';
@@ -309,7 +305,7 @@ function handleLogoUpload(event) {
 
 function saveBranding() {
     data.branding.name = document.getElementById('conf_clubName').value || "Mi Club";
-    data.branding.logo = document.getElementById('conf_clubLogo').value || ""; // Ahora toma el Base64
+    data.branding.logo = document.getElementById('conf_clubLogo').value || ""; 
     save(); alert("Identidad actualizada correctamente.");
 }
 
@@ -351,7 +347,6 @@ function showView(view) {
         document.getElementById('conf_clubName').value = data.branding.name;
         document.getElementById('conf_clubLogo').value = data.branding.logo;
         
-        // Mostrar vista previa si ya hay un logo guardado
         if(data.branding.logo && data.branding.logo !== "") {
             document.getElementById('logoPreview').src = data.branding.logo;
             document.getElementById('logoPreviewContainer').style.display = 'block';
@@ -444,17 +439,17 @@ function deletePayment(player, paymentId) {
 }
 
 function calcDebt(p){
-    let mp = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
+    let mp = (data.monthPayments && data.monthPayments[selectedMonth]) ? (Number(data.monthPayments[selectedMonth][p]) || 0) : 0;
     let planPrice = 0;
-    if(data.plans && data.plans[p] == 1) planPrice = data.prices.plan1;
-    else if(data.plans && data.plans[p] == 2) planPrice = data.prices.plan2;
+    if(data.plans && data.plans[p] == 1) planPrice = Number(data.prices.plan1) || 0;
+    else if(data.plans && data.plans[p] == 2) planPrice = Number(data.prices.plan2) || 0;
     else if(data.plans && data.plans[p] == 3) planPrice = 0; 
 
     let fridayDebt = 0;
     if(!data.fridayPack || !data.fridayPack[p]){
         Object.keys(data.fridayAttendance || {}).forEach(k=>{
             if(k.startsWith(selectedMonth) && data.fridayAttendance[k][p]?.present && !data.fridayAttendance[k][p]?.paid) 
-                fridayDebt += data.prices.friday;
+                fridayDebt += Number(data.prices.friday) || 0;
         });
     }
     return Math.max(0, (planPrice - mp) + fridayDebt);
@@ -482,13 +477,28 @@ function render(){
 
 function updateRevenueUI() {
     let cuotas = 0; let sueltos = 0; let packs = 0; let gastos = 0; let otrosIng = 0;
-    if(data.monthPayments && data.monthPayments[selectedMonth]) Object.values(data.monthPayments[selectedMonth]).forEach(v=>cuotas+=v);
+
+    // FILTRO ANTI-FANTASMAS: Solo suma si el jugador está en data.players
+    if(data.monthPayments && data.monthPayments[selectedMonth]) {
+        data.players.forEach(p => {
+            if (data.monthPayments[selectedMonth][p]) {
+                cuotas += Number(data.monthPayments[selectedMonth][p]) || 0;
+            }
+        });
+    }
+
     Object.keys(data.fridayAttendance || {}).forEach(k=>{
-        if(k.startsWith(selectedMonth)) Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=data.prices.friday; });
+        if(k.startsWith(selectedMonth)) {
+            data.players.forEach(p => {
+                let v = data.fridayAttendance[k][p];
+                if(v && v.present && v.paid) sueltos += Number(data.prices.friday) || 0;
+            });
+        }
     });
-    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs+=data.prices.packFriday; });
-    if(data.expenses && data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => gastos += e.amount);
-    if(data.otherIncome && data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => otrosIng += e.amount);
+
+    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs += Number(data.prices.packFriday) || 0; });
+    if(data.expenses && data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => gastos += Number(e.amount) || 0);
+    if(data.otherIncome && data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => otrosIng += Number(e.amount) || 0);
     
     let totalIngresos = cuotas + sueltos + packs + otrosIng;
     let neto = totalIngresos - gastos;
@@ -508,13 +518,13 @@ function updateRevenueUI() {
     let ilist = document.getElementById('incomeList'); ilist.innerHTML = '';
     if(data.otherIncome && data.otherIncome[selectedMonth]) {
         data.otherIncome[selectedMonth].forEach(e => {
-            ilist.innerHTML += `<div class="income-item"><span>${e.desc}</span><div><b style="color:#22c55e; margin-right:10px;">+$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeOtherIncome(${e.id})">×</button></div></div>`;
+            ilist.innerHTML += `<div class="income-item"><span>${e.desc}</span><div><b style="color:#22c55e; margin-right:10px;">+$${Number(e.amount).toLocaleString()}</b><button class="del-icon" onclick="removeOtherIncome(${e.id})">×</button></div></div>`;
         });
     }
     let elist = document.getElementById('expensesList'); elist.innerHTML = '';
     if(data.expenses && data.expenses[selectedMonth]) {
         data.expenses[selectedMonth].forEach(e => {
-            elist.innerHTML += `<div class="expense-item"><span>${e.desc}</span><div><b style="color:#ef4444; margin-right:10px;">-$${e.amount.toLocaleString()}</b><button class="del-icon" onclick="removeExpense(${e.id})">×</button></div></div>`;
+            elist.innerHTML += `<div class="expense-item"><span>${e.desc}</span><div><b style="color:#ef4444; margin-right:10px;">-$${Number(e.amount).toLocaleString()}</b><button class="del-icon" onclick="removeExpense(${e.id})">×</button></div></div>`;
         });
     }
 }
@@ -580,7 +590,7 @@ function renderProfile(){
     let html = `<button class='backBtn' onclick="showView('list')">⬅ Volver</button><h2 style="margin-top:0;">Historial de ${p}</h2>`;
     if(history.length === 0) html += '<p style="color:#94a3b8;">Sin pagos registrados.</p>';
     history.slice().reverse().forEach(h => {
-        html += `<div class="history-item"><span>${h.date} (${h.month})</span><div><b style="margin-right:10px;">$${h.amount.toLocaleString()}</b><button class="del-icon" onclick="deletePayment('${p}', ${h.id})">×</button></div></div>`;
+        html += `<div class="history-item"><span>${h.date} (${h.month})</span><div><b style="margin-right:10px;">$${Number(h.amount).toLocaleString()}</b><button class="del-icon" onclick="deletePayment('${p}', ${h.id})">×</button></div></div>`;
     });
     document.getElementById('profileView').innerHTML = html;
 }
@@ -613,13 +623,13 @@ function exportToCSV() {
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.forEach(p => {
         let planStr = data.plans[p] == 1 ? "1 vez" : data.plans[p] == 2 ? "2 veces" : "Solo Viernes";
-        let paid = (data.monthPayments && data.monthPayments[selectedMonth]) ? data.monthPayments[selectedMonth][p] || 0 : 0;
+        let paid = (data.monthPayments && data.monthPayments[selectedMonth]) ? Number(data.monthPayments[selectedMonth][p]) || 0 : 0;
         csv += `"${p}","${planStr}","$${paid}","$${calcDebt(p)}"\n`;
     });
     csv += "\nINGRESOS EXTRA\nDesc,Monto\n";
-    if(data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => csv += `"${e.desc}","+$${e.amount}"\n`);
+    if(data.otherIncome[selectedMonth]) data.otherIncome[selectedMonth].forEach(e => csv += `"${e.desc}","+$${Number(e.amount)}"\n`);
     csv += "\nGASTOS\nDesc,Monto\n";
-    if(data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => csv += `"${e.desc}","-$${e.amount}"\n`);
+    if(data.expenses[selectedMonth]) data.expenses[selectedMonth].forEach(e => csv += `"${e.desc}","-$${Number(e.amount)}"\n`);
     
     let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     let link = document.createElement("a");
