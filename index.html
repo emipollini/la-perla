@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>La Perla Admin - 2026+</title>
+<title>La Perla Admin - Secure</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
@@ -14,6 +14,11 @@
     input, button, select{ padding:12px; border-radius:8px; border:none; margin:5px 0; width:100%; box-sizing:border-box; font-size: 16px; }
     button{ cursor:pointer; font-weight:bold; }
     button:active { opacity: 0.7; }
+    
+    /* Estilos del Login */
+    #loginView { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
+    .login-box { background: #1e293b; padding: 30px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; border: 1px solid #38bdf8; }
+    
     .player{ background:#0b1220; padding:15px; border-radius:10px; margin-top:10px; border: 1px solid #1e293b; }
     .badge{ display:inline-block; padding:4px 10px; border-radius:8px; font-size:12px; font-weight: bold; margin: 5px 0; }
     .debt{background:orange; color:black;}
@@ -28,22 +33,32 @@
     .stateYellow{background:#f59e0b; color:black;}
     .stateRed{background:#ef4444; color:white;}
     #searchInput { background: #1e293b; color: white; border: 2px solid #334155; margin-bottom: 10px; }
-    .history-item { background: #1e293b; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 14px; display: flex; justify-content: space-between; border-left: 4px solid #38bdf8; }
-    #loading { text-align: center; padding: 20px; font-style: italic; color: #38bdf8; }
+    .history-item { background: #1e293b; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #38bdf8; }
+    .rev-detail { font-size: 13px; color: #94a3b8; margin-top: 5px; background: #0f172a; padding: 8px; border-radius: 6px; }
+    .del-hist { background: #ef4444; color: white; width: 25px; height: 25px; border-radius: 50%; padding: 0; line-height: 1; font-size: 12px; }
 </style>
 </head>
 <body>
 
-<header>🏓 La Perla Admin (2026+)</header>
+<header>🏓 La Perla Admin</header>
 
 <div class="container">
-    <div id="loading">Conectando con la nube...</div>
+    <div id="loginView">
+        <div class="login-box">
+            <h2 style="color: #38bdf8;">Acceso Restringido</h2>
+            <p>Ingresá la contraseña para continuar:</p>
+            <input type="password" id="passInput" placeholder="Contraseña" style="text-align: center;">
+            <button onclick="checkLogin()" style="background: #38bdf8; color: black; margin-top: 15px;">Entrar</button>
+            <p id="loginError" style="color: #ef4444; display: none; margin-top: 10px; font-size: 14px;">❌ Contraseña incorrecta</p>
+        </div>
+    </div>
 
     <div id="mainContent" style="display:none;">
         <div class="card">
             <h3>📅 Mes y Recaudación</h3>
             <select id="monthSelect" onchange="setMonth(this.value)"></select>
-            <div id="revenue" style="font-weight: bold; color: #38bdf8; margin-top: 10px; font-size: 1.2em;"></div>
+            <div id="revenueTotal" style="font-weight: bold; color: #38bdf8; margin-top: 10px; font-size: 1.4em;"></div>
+            <div id="revenueBreakdown" class="rev-detail"></div>
         </div>
 
         <div class="card">
@@ -70,7 +85,7 @@
 </div>
 
 <script>
-// CONFIGURACION DE FIREBASE
+// CONFIGURACION FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD1v_l8XF2UVwcXcfNcquhekDv26GNAV8",
   authDomain: "la-perla-admin.firebaseapp.com",
@@ -84,56 +99,61 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let data = { players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{} };
+const MASTER_PASS = "19122001"; // <--- TU CONTRASEÑA
+let isLoggedIn = false;
 
-const PRICE_1=30000;
-const PRICE_2=45000;
-const FRIDAY_PRICE=8000;
-const PACK_FRIDAY=20000;
+let data = { players:[], fridayAttendance:{}, fridayPack:{}, plans:{}, monthPayments:{}, history:{} };
+const PRICE_1=30000; const PRICE_2=45000; const FRIDAY_PRICE=8000; const PACK_FRIDAY=20000;
 
 let now = new Date();
-function getMonthName(date){
-    return date.toLocaleString('es-AR',{month:'long',year:'numeric'});
-}
-let selectedMonth = getMonthName(now);
+function getMonthName(date){ return date.toLocaleString('es-AR',{month:'long',year:'numeric'}); }
+let selectedMonth = getMonthName(now); 
 let currentView = 'list';
 let selectedPlayer = null;
-let selectedFriday = null;
 
-db.ref('perlaData').on('value', (snapshot) => {
-    const cloudData = snapshot.val();
-    if(cloudData) {
-        data = { ...data, ...cloudData };
-        if(!data.players) data.players = [];
+// FUNCIÓN DE LOGIN
+function checkLogin() {
+    const input = document.getElementById('passInput').value;
+    if(input === MASTER_PASS) {
+        isLoggedIn = true;
+        document.getElementById('loginView').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        render();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('passInput').value = '';
     }
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    render();
+}
+
+// Permitir entrar con la tecla "Enter"
+document.getElementById('passInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') { checkLogin(); }
 });
 
-function save(){
-    db.ref('perlaData').set(data);
-}
+// ESCUCHAR FIREBASE
+db.ref('perlaData').on('value', (snapshot) => {
+    const cloudData = snapshot.val();
+    if(cloudData) { 
+        data = { ...data, ...cloudData }; 
+        if(!data.players) data.players = []; 
+    }
+    // Si ya está logueado, renderizar cambios en tiempo real
+    if(isLoggedIn) render();
+});
+
+function save(){ db.ref('perlaData').set(data); }
 
 function setMonth(m){ selectedMonth = m; render(); }
 
-// SELECTOR EXCLUSIVO 2026 EN ADELANTE
 function updateMonthSelector(){
     let sel=document.getElementById('monthSelect');
+    if(sel.options.length > 0) return;
     let options = [];
-    
-    // Generar meses desde Enero 2026 hasta Diciembre 2026
-    // (Podés cambiar el '12' por '24' si querés ver hasta el 2027)
-    for(let i = 0; i < 12; i++){
-        let d = new Date(2026, i, 1);
-        options.push(getMonthName(d));
-    }
-    
+    for(let i = 0; i < 12; i++){ let d = new Date(2026, i, 1); options.push(getMonthName(d)); }
     sel.innerHTML='';
     options.forEach(m=>{
-        let opt=document.createElement('option');
-        opt.value=m; opt.textContent=m;
-        if(m===selectedMonth) opt.selected=true;
+        let opt=document.createElement('option'); opt.value=m; opt.textContent=m;
+        if(m===selectedMonth) opt.selected=true; 
         sel.appendChild(opt);
     });
 }
@@ -142,27 +162,39 @@ function addPlayer(){
     let name=document.getElementById('name').value.trim();
     if(!name || data.players.includes(name)) return;
     data.players.push(name);
-    document.getElementById('name').value = '';
-    save();
+    document.getElementById('name').value = ''; save();
 }
 
 function removePlayer(p){
     if(!confirm(`¿Borrar definitivamente a ${p}?`)) return;
-    data.players=data.players.filter(x=>x!==p);
-    save();
+    data.players=data.players.filter(x=>x!==p); save();
 }
 
 function payMonth(p){
     let amount=parseInt(document.getElementById('pay_'+p).value||0);
     if(!amount) return;
+    if(!confirm(`¿Confirmar pago de $${amount} para ${p}?`)) return;
     if(!data.monthPayments) data.monthPayments = {};
     if(!data.monthPayments[selectedMonth]) data.monthPayments[selectedMonth]={};
     data.monthPayments[selectedMonth][p] = (data.monthPayments[selectedMonth][p] || 0) + amount;
-
     if(!data.history) data.history = {};
     if(!data.history[p]) data.history[p] = [];
-    data.history[p].push({ date: new Date().toLocaleDateString('es-AR'), amount: amount, month: selectedMonth });
+    data.history[p].push({ id: Date.now(), date: new Date().toLocaleDateString('es-AR'), amount: amount, month: selectedMonth });
+    document.getElementById('pay_'+p).value = '';
     save();
+}
+
+function deletePayment(player, paymentId) {
+    if(!confirm("¿Borrar este registro de pago?")) return;
+    let pIdx = data.history[player].findIndex(h => h.id === paymentId);
+    if(pIdx > -1) {
+        let payment = data.history[player][pIdx];
+        if(data.monthPayments[payment.month] && data.monthPayments[payment.month][player]) {
+            data.monthPayments[payment.month][player] -= payment.amount;
+        }
+        data.history[player].splice(pIdx, 1);
+        save();
+    }
 }
 
 function calcDebt(p){
@@ -195,31 +227,41 @@ function showView(view) {
 }
 
 function render(){
+    if(!isLoggedIn) return; // No renderizar nada si no está logueado
     updateMonthSelector();
-    document.getElementById('revenue').innerHTML="Recaudado: $"+calcRevenue().toLocaleString();
+    updateRevenueUI();
     if(currentView === 'list') renderList();
     else if(currentView === 'profile') renderProfile();
     else if(currentView === 'friday') renderFridayView();
 }
 
+function updateRevenueUI() {
+    let cuotas = 0; let sueltos = 0; let packs = 0;
+    if(data.monthPayments && data.monthPayments[selectedMonth]){
+        Object.values(data.monthPayments[selectedMonth]).forEach(v=>cuotas+=v);
+    }
+    Object.keys(data.fridayAttendance || {}).forEach(k=>{
+        if(k.startsWith(selectedMonth)){
+            Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) sueltos+=FRIDAY_PRICE; });
+        }
+    });
+    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) packs+=PACK_FRIDAY; });
+    document.getElementById('revenueTotal').innerHTML = `Total: $${(cuotas + sueltos + packs).toLocaleString()}`;
+    document.getElementById('revenueBreakdown').innerHTML = `Cuotas: $${cuotas.toLocaleString()} | Viernes: $${sueltos.toLocaleString()} | Packs: $${packs.toLocaleString()}`;
+}
+
 function renderList(){
-    let pd = document.getElementById('players');
-    pd.innerHTML = '';
+    let pd = document.getElementById('players'); pd.innerHTML = '';
     const search = document.getElementById('searchInput').value.toLowerCase();
     let sortedPlayers = [...data.players].sort();
-
     sortedPlayers.filter(p => p.toLowerCase().includes(search)).forEach(p => {
-        let debt = calcDebt(p);
-        let state = getState(p);
+        let debt = calcDebt(p); let state = getState(p);
         let msj = encodeURIComponent(`Hola ${p}! 🏓 Resumen La Perla (${selectedMonth}): Saldo pendiente $${debt}.`);
         let packActivo = data.fridayPack && data.fridayPack[p];
-        
-        let el = document.createElement('div');
-        el.className='player';
+        let el = document.createElement('div'); el.className='player';
         el.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b>${p}</b> 
-                <span class='badge ${state.cls}'>${state.text}</span>
+                <b>${p}</b> <span class='badge ${state.cls}'>${state.text}</span>
             </div>
             <span class='badge debt'>Deuda: $${debt.toLocaleString()}</span>
             <div style="display:flex; gap:10px;">
@@ -232,7 +274,7 @@ function renderList(){
                 </button>
             </div>
             <div style="display:flex; gap:5px;">
-                <input id='pay_${p}' type='number' placeholder='Monto' style="flex:1"/>
+                <input id='pay_${p}' type='number' placeholder='Monto'/>
                 <button class='paidGreen' onclick="payMonth('${p}')" style="flex:0.5">Cobrar</button>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
@@ -242,20 +284,16 @@ function renderList(){
             <button class='deleteBtn' onclick="removePlayer('${p}')">Eliminar Jugador</button>`;
         pd.appendChild(el);
     });
-
-    let fr = document.getElementById('fridays');
-    fr.innerHTML = '';
+    let fr = document.getElementById('fridays'); fr.innerHTML = '';
     let monthsArr = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
     let parts = selectedMonth.split(" de ");
     let mIdx = monthsArr.indexOf(parts[0].toLowerCase());
     let year = parseInt(parts[1]);
-    
     for(let i=1; i<=31; i++){
         let d = new Date(year, mIdx, i);
         if(d.getMonth() !== mIdx) break;
         if(d.getDay() === 5){
-            let b = document.createElement('button');
-            b.className='viewBtn'; b.style.marginBottom='10px';
+            let b = document.createElement('button'); b.className='viewBtn'; b.style.marginBottom='10px';
             b.textContent = `Asistencia Viernes ${i}`;
             b.onclick = () => { selectedFriday = i; showView('friday'); };
             fr.appendChild(b);
@@ -266,21 +304,25 @@ function renderList(){
 function renderProfile(){
     let p = selectedPlayer;
     let history = data.history && data.history[p] ? data.history[p] : [];
-    document.getElementById('profileView').innerHTML = `
-        <button class='backBtn' onclick="showView('list')">⬅ Volver</button>
-        <h2>Historial de ${p}</h2>
-        ${history.length === 0 ? '<p>Sin pagos registrados.</p>' : 
-        history.slice().reverse().map(h => `
+    let html = `<button class='backBtn' onclick="showView('list')">⬅ Volver</button><h2>Historial de ${p}</h2>`;
+    if(history.length === 0) html += '<p>Sin pagos registrados.</p>';
+    else {
+        history.slice().reverse().forEach(h => {
+            html += `
             <div class="history-item">
                 <span>${h.date} (${h.month})</span>
-                <b>$${h.amount.toLocaleString()}</b>
-            </div>`).join('')}
-        <button class='deleteBtn' style="margin-top:20px; background:#64748b" onclick="if(confirm('¿Reiniciar historial?')) { data.history['${p}']=[]; save(); }">Limpiar historial</button>`;
+                <div>
+                    <b style="margin-right:10px;">$${h.amount.toLocaleString()}</b>
+                    <button class="del-hist" onclick="deletePayment('${p}', ${h.id})">×</button>
+                </div>
+            </div>`;
+        });
+    }
+    document.getElementById('profileView').innerHTML = html;
 }
 
 function renderFridayView(){
-    let f = selectedFriday;
-    let k = selectedMonth + '-' + f;
+    let f = selectedFriday; let k = selectedMonth + '-' + f;
     let html = `<button class='backBtn' onclick="showView('list')">⬅ Volver</button><h2>Viernes ${f}</h2>`;
     let sortedPlayers = [...data.players].sort();
     sortedPlayers.forEach(p => {
@@ -289,12 +331,8 @@ function renderFridayView(){
             <div class="player">
                 <b>${p}</b><br>
                 <div style="display:flex; gap:10px;">
-                    <button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})">
-                        ${a.present?'✔ Presente':'✖ Ausente'}
-                    </button>
-                    <button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}>
-                        ${a.paid?'💰 Pagó':'⏳ No pagó'}
-                    </button>
+                    <button class="${a.present?'stateGreen':'packGray'}" onclick="toggleFriday('${p}',${f})"> ${a.present?'✔ Presente':'✖ Ausente'} </button>
+                    <button class="${a.paid?'stateGreen':'stateRed'}" onclick="toggleFridayPay('${p}',${f})" ${!a.present?'disabled':''}> ${a.paid?'💰 Pagó':'⏳ No pagó'} </button>
                 </div>
             </div>`;
     });
@@ -311,25 +349,7 @@ function toggleFriday(p,d){
     save();
 }
 
-function toggleFridayPay(p,d){
-    let k=selectedMonth+'-'+d;
-    data.fridayAttendance[k][p].paid = !data.fridayAttendance[k][p].paid;
-    save();
-}
-
-function calcRevenue(){
-    let total=0;
-    if(data.monthPayments && data.monthPayments[selectedMonth]){
-        Object.values(data.monthPayments[selectedMonth]).forEach(v=>total+=v);
-    }
-    Object.keys(data.fridayAttendance || {}).forEach(k=>{
-        if(k.startsWith(selectedMonth)){
-            Object.values(data.fridayAttendance[k]).forEach(v=>{ if(v.present && v.paid) total+=FRIDAY_PRICE; });
-        }
-    });
-    data.players.forEach(p => { if(data.fridayPack && data.fridayPack[p]) total+=PACK_FRIDAY; });
-    return total;
-}
+function toggleFridayPay(p,d){ let k=selectedMonth+'-'+d; data.fridayAttendance[k][p].paid = !data.fridayAttendance[k][p].paid; save(); }
 </script>
 </body>
 </html>
